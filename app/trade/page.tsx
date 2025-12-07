@@ -84,28 +84,59 @@ export default function TradePage() {
         </div>
       </header>
 
-      {/* Pair Info Bar */}
-      <div className="h-[44px] bg-[#131622] border-b border-gray-800 px-6 flex items-center gap-6">
-        <div className="w-[19px] h-[18px] rounded-full bg-gray-600"></div>
-        <div className="text-white text-[12px] font-semibold">{selectedPair}</div>
-        <div className="text-[#F91B13] text-[12px] font-semibold tracking-[0.36px]">
+      {/* Pair Info Bar - Above Chart */}
+      <div className="h-[44px] bg-[#131622] rounded-t-[3px] relative">
+        {/* Avatar Icon */}
+        <div className="absolute left-[19px] top-[13px] w-[19px] h-[18px] rounded-full bg-gray-600"></div>
+        
+        {/* BTCUSD Text */}
+        <div className="absolute left-[43px] top-[14px] text-white text-[12px] font-semibold">
+          {selectedPair}
+        </div>
+        
+        {/* Dropdown Arrow */}
+        <div className="absolute left-[110px] top-[25px] w-[8px] h-[5px]">
+          <ChevronDown className="w-[8px] h-[5px] text-white rotate-180" />
+        </div>
+        
+        {/* Current Price */}
+        <div className="absolute left-[133px] top-[15px] text-[#F91B13] text-[12px] font-semibold tracking-[0.36px]">
           ${price.toLocaleString()}
         </div>
-        <div className="text-[#B7B7B7] text-[10px] font-semibold">24h Change</div>
-        <div className="text-[#34CD26] text-[11px] font-semibold">
+        
+        {/* Labels Row 1 */}
+        <div className="absolute left-[194px] top-[7px] text-[#B7B7B7] text-[10px] font-semibold">
+          24h Change
+        </div>
+        <div className="absolute left-[276px] top-[7px] text-[#B7B7B7] text-[10px] font-semibold">
+          24h Vol
+        </div>
+        <div className="absolute left-[370px] top-[7px] text-[#B7B7B7] text-[10px] font-semibold">
+          High
+        </div>
+        <div className="absolute left-[451px] top-[7px] text-[#B7B7B7] text-[10px] font-semibold">
+          Low
+        </div>
+        <div className="absolute left-[533px] top-[7px] text-[#B7B7B7] text-[10px] font-semibold">
+          Funding
+        </div>
+        
+        {/* Values Row 2 */}
+        <div className="absolute left-[212px] top-[21px] text-[#34CD26] text-[11px] font-semibold">
           {change24h >= 0 ? "+" : ""}{change24h}%
         </div>
-        <div className="text-[#B7B7B7] text-[10px] font-semibold">24h Vol</div>
-        <div className="text-[#CFCFCF] text-[11px] font-semibold">
-          ${(volume24h / 1000000).toFixed(0)}M
+        <div className="absolute left-[276px] top-[21px] text-[#CFCFCF] text-[11px] font-semibold">
+          ${volume24h.toLocaleString()}
         </div>
-        <div className="text-[#B7B7B7] text-[10px] font-semibold">High</div>
-        <div className="text-[#CFCFCF] text-[11px] font-semibold">${high24h.toLocaleString()}</div>
-        <div className="text-[#B7B7B7] text-[10px] font-semibold">Low</div>
-        <div className="text-[#CFCFCF] text-[11px] font-semibold">${low24h.toLocaleString()}</div>
-        <div className="text-[#B7B7B7] text-[10px] font-semibold">Funding</div>
-        <div className="text-[#CFCFCF] text-[10px] font-semibold">04:08:14</div>
-        <ChevronDown className="w-4 h-4 text-white ml-auto" />
+        <div className="absolute left-[370px] top-[21px] text-[#CFCFCF] text-[11px] font-semibold">
+          ${high24h.toLocaleString()}
+        </div>
+        <div className="absolute left-[451px] top-[21px] text-[#CFCFCF] text-[11px] font-semibold">
+          ${low24h.toLocaleString()}
+        </div>
+        <div className="absolute left-[532px] top-[22px] text-[#CFCFCF] text-[10px] font-semibold">
+          04:08:14
+        </div>
       </div>
 
       {/* Main Trading Interface */}
