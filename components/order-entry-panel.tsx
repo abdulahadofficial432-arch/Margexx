@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
@@ -14,164 +14,221 @@ interface OrderEntryPanelProps {
 }
 
 export function OrderEntryPanel({ pair, price, change24h, volume24h }: OrderEntryPanelProps) {
-  const [orderType, setOrderType] = useState("Market")
+  const [orderType, setOrderType] = useState("Limit")
   const [marginMode, setMarginMode] = useState("Isolated")
   const [leverage, setLeverage] = useState(60)
   const [orderSize, setOrderSize] = useState("0")
-  const [orderSizeUsd, setOrderSizeUsd] = useState("0")
+  const [limitPrice, setLimitPrice] = useState("111035.5")
+  const [sliderValue, setSliderValue] = useState(0)
 
-  const formatNumber = (num: number) => {
+  const buyPrice = price
+  const sellPrice = price - 0.5
+
+  const formatPrice = (num: number) => {
     return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
     }).format(num)
   }
 
-  const formatVolume = (num: number) => {
-    if (num >= 1000000) {
-      return `$${(num / 1000000).toFixed(2)}M`
-    }
-    return `$${num.toLocaleString()}`
-  }
-
   return (
-    <div className="flex flex-col h-full p-4">
-      {/* Header */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2">Main Trade</h3>
-        <div className="text-2xl font-bold text-gray-300">0.0 USDT</div>
-      </div>
-
-      {/* Trading Pair Info */}
-      <div className="mb-6 p-3 bg-gray-900 rounded-lg">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-lg font-semibold">{pair}</span>
-          <span className={`text-sm ${change24h >= 0 ? "text-[#22c55e]" : "text-red-500"}`}>
-            {change24h >= 0 ? "+" : ""}{change24h}%
-          </span>
+    <div className="relative w-full h-full bg-[#131622] overflow-hidden">
+      {/* Header Section */}
+      <div className="w-full h-[42px] bg-[#1E2333] rounded-t-[3px] relative px-4 py-2">
+        <div className="absolute left-[19px] top-[12px] w-[19px] h-[19px] rounded-full bg-gray-600"></div>
+        <div className="absolute left-[43px] top-[5px] text-[#949597] text-[10px] font-normal">
+          Main Trade
         </div>
-        <div className="text-2xl font-bold mb-1">${formatNumber(price)}</div>
-        <div className="text-xs text-gray-400 space-y-1">
-          <div>24h Volume: {formatVolume(volume24h)}</div>
-          <div>24h High: ${formatNumber(91611.5)}</div>
-          <div>24h Low: ${formatNumber(87863)}</div>
-          <div>Funding Time: 05:42:49</div>
+        <div className="absolute left-[43px] top-[19px] text-[#E5E5E5] text-[13px] font-semibold">
+          0.0 USDT
+        </div>
+        <div className="absolute right-4 top-[9px] w-6 h-6">
+          <ChevronDown className="w-4 h-4 text-white" />
         </div>
       </div>
 
-      {/* Order Type Selection */}
-      <div className="mb-4">
-        <div className="flex gap-2 mb-2">
-          {["Limit", "Market", "Stop Market"].map((type) => (
-            <button
-              key={type}
-              onClick={() => setOrderType(type)}
-              className={`flex-1 px-3 py-2 text-sm rounded ${
-                orderType === type
-                  ? "bg-[#22c55e] text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Margin Mode */}
-      <div className="mb-4">
-        <div className="flex gap-2 mb-2">
+      {/* Order Type Tabs */}
+      <div className="relative px-4 pt-3 pb-2">
+        <div className="flex items-center gap-6">
           <button
-            onClick={() => setMarginMode("Isolated")}
-            className={`flex-1 px-3 py-2 text-sm rounded ${
-              marginMode === "Isolated"
-                ? "bg-[#22c55e] text-white"
-                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            onClick={() => setOrderType("Limit")}
+            className={`text-[11px] font-semibold ${
+              orderType === "Limit" ? "text-[#4179FF]" : "text-[#E0E0E0]"
             }`}
           >
-            Isolated
+            Limit
           </button>
           <button
-            onClick={() => setMarginMode("Cross")}
-            className={`flex-1 px-3 py-2 text-sm rounded ${
-              marginMode === "Cross"
-                ? "bg-[#22c55e] text-white"
-                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            onClick={() => setOrderType("Market")}
+            className={`text-[11px] font-semibold ${
+              orderType === "Market" ? "text-[#4179FF]" : "text-[#E0E0E0]"
             }`}
           >
-            Cross
+            Market
+          </button>
+          <button
+            onClick={() => setOrderType("Stop Market")}
+            className={`text-[11px] font-semibold ${
+              orderType === "Stop Market" ? "text-[#4179FF]" : "text-[#E0E0E0]"
+            }`}
+          >
+            Stop Market
           </button>
         </div>
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-sm text-gray-400">Leverage</span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLeverage(Math.max(1, leverage - 1))}
-              className="px-2 py-1 bg-gray-800 rounded text-sm"
-            >
-              -
-            </button>
-            <span className="text-sm font-semibold">{leverage}x</span>
-            <button
-              onClick={() => setLeverage(Math.min(100, leverage + 1))}
-              className="px-2 py-1 bg-gray-800 rounded text-sm"
-            >
-              +
-            </button>
-          </div>
+        {/* Underline for selected tab */}
+        {orderType === "Limit" && (
+          <div className="absolute left-4 top-[29px] w-[63px] h-[2px] bg-[#4179FF]"></div>
+        )}
+        {orderType === "Market" && (
+          <div className="absolute left-[88px] top-[29px] w-[51px] h-[2px] bg-[#4179FF]"></div>
+        )}
+        {orderType === "Stop Market" && (
+          <div className="absolute left-[139px] top-[29px] w-[75px] h-[2px] bg-[#4179FF]"></div>
+        )}
+      </div>
+
+      {/* Margin Mode and Leverage */}
+      <div className="px-4 pt-2 pb-3 flex gap-2">
+        <div className="relative flex-1">
+          <button className="w-full h-[30px] bg-[#1E2333] border border-[#353C51] rounded-[2px] flex items-center justify-between px-3">
+            <span className="text-[#E0E0E0] text-[11px] font-semibold">{marginMode}</span>
+            <ChevronDown className="w-3 h-3 text-[#B7B7B7]" />
+          </button>
+        </div>
+        <div className="relative flex-1">
+          <button className="w-full h-[30px] bg-[#1E2333] border border-[#353C51] rounded-[2px] flex items-center justify-between px-3">
+            <span className="text-[#E0E0E0] text-[12px] font-semibold">{leverage}x</span>
+            <ChevronDown className="w-3 h-3 text-[#B7B7B7]" />
+          </button>
         </div>
       </div>
 
       {/* Order Size */}
-      <div className="mb-4">
-        <label className="text-sm text-gray-400 mb-2 block">Order Size (Leveraged)</label>
-        <div className="space-y-2">
-          <Input
+      <div className="px-4 pb-3">
+        <div className="text-[#B7B7B7] text-[11px] font-semibold mb-2">
+          Order Size (Leveraged)
+        </div>
+        <div className="relative">
+          <input
             type="text"
             value={orderSize}
             onChange={(e) => setOrderSize(e.target.value)}
-            placeholder="0 USD"
-            className="bg-gray-900 border-gray-700 text-white"
+            className="w-full h-[30px] bg-[#1E2333] border border-[#353C51] rounded-[2px] px-3 text-[#E0E0E0] text-[12px] font-semibold outline-none"
+            placeholder="0"
           />
-          <Input
-            type="text"
-            value={orderSizeUsd}
-            onChange={(e) => setOrderSizeUsd(e.target.value)}
-            placeholder="0.0 USDT"
-            className="bg-gray-900 border-gray-700 text-white"
-          />
-        </div>
-        <div className="mt-2">
-          <Slider
-            defaultValue={[0]}
-            max={100}
-            step={1}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>0%</span>
-            <span>25%</span>
-            <span>50%</span>
-            <span>75%</span>
-            <span>100%</span>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#E0E0E0] text-[12px] font-semibold">
+            USD
           </div>
         </div>
       </div>
 
-      {/* Buy/Sell Buttons */}
-      <div className="space-y-2">
-        <Button
-          className="w-full bg-[#22c55e] hover:bg-[#20b855] text-white font-semibold py-6"
-        >
-          Buy / Market
-        </Button>
-        <Button
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-6"
-        >
-          Sell / Market
-        </Button>
+      {/* Slider */}
+      <div className="px-4 pb-3 relative">
+        <div className="text-[#B7B7B7] text-[10px] font-semibold mb-2">0.0 USDT</div>
+        <div className="relative mx-2">
+          {/* Custom Slider */}
+          <div className="relative h-[3px] bg-[#262C3F] rounded-[2px]">
+            {/* Percentage Markers */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[3px] bg-[#6B7284] rounded-full"></div>
+            <div className="absolute left-1/4 top-1/2 -translate-y-1/2 w-[3px] h-[3px] bg-[#6B7284] rounded-full"></div>
+            <div className="absolute left-1/2 top-1/2 -translate-y-1/2 w-[3px] h-[3px] bg-[#6B7284] rounded-full"></div>
+            <div className="absolute left-3/4 top-1/2 -translate-y-1/2 w-[3px] h-[3px] bg-[#6B7284] rounded-full"></div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-[3px] bg-[#6B7284] rounded-full"></div>
+            
+            {/* Slider Track Fill */}
+            <div
+              className="absolute left-0 top-0 h-full bg-[#205CF0] rounded-[2px]"
+              style={{ width: `${sliderValue}%` }}
+            ></div>
+            
+            {/* Slider Thumb */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-[13px] h-[13px] bg-[#205CF0] rounded-full cursor-pointer hover:scale-110 transition-transform"
+              style={{ left: `${sliderValue}%` }}
+              onMouseDown={(e) => {
+                const slider = e.currentTarget.parentElement
+                if (!slider) return
+                
+                const handleMove = (moveEvent: MouseEvent) => {
+                  const rect = slider.getBoundingClientRect()
+                  const x = moveEvent.clientX - rect.left
+                  const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100))
+                  setSliderValue(percentage)
+                }
+                
+                const handleUp = () => {
+                  document.removeEventListener('mousemove', handleMove)
+                  document.removeEventListener('mouseup', handleUp)
+                }
+                
+                document.addEventListener('mousemove', handleMove)
+                document.addEventListener('mouseup', handleUp)
+                handleMove(e.nativeEvent)
+              }}
+            ></div>
+          </div>
+        </div>
+        {/* Percentage Labels */}
+        <div className="flex justify-between text-[#B7B7B7] text-[10px] font-semibold mt-1">
+          <span>0%</span>
+          <span>25%</span>
+          <span>50%</span>
+          <span>75%</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      {/* Limit Price (only shown when Limit is selected) */}
+      {orderType === "Limit" && (
+        <div className="px-4 pb-3">
+          <div className="text-[#B7B7B7] text-[10px] font-semibold mb-2 tracking-[0.1px]">
+            Limit Price
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              value={limitPrice}
+              onChange={(e) => setLimitPrice(e.target.value)}
+              className="w-full h-[30px] bg-[#1E2333] border border-[#353C51] rounded-[2px] px-3 text-[#E0E0E0] text-[12px] font-semibold outline-none"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#E0E0E0] text-[12px] font-semibold">
+              USD
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Buy and Sell Buttons */}
+      <div className="px-4 pb-3 flex gap-2">
+        <button className="flex-1 h-[43px] bg-[#43C71F] rounded-[1px] relative flex flex-col items-center justify-center">
+          <div className="text-white text-[10px] font-semibold tracking-[0.1px]">
+            Buy/Long
+          </div>
+          <div className="text-white text-[10px] font-semibold">
+            ${formatPrice(buyPrice)}
+          </div>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[10px] h-[10px]">
+            <div className="w-[8.33px] h-[8.33px] bg-white m-auto mt-[0.83px]"></div>
+          </div>
+        </button>
+        <button className="flex-1 h-[43px] bg-[#E43714] rounded-[1px] relative flex flex-col items-center justify-center">
+          <div className="text-white text-[10px] font-semibold tracking-[0.1px]">
+            Sell/Short
+          </div>
+          <div className="text-white text-[11px] font-semibold">
+            ${formatPrice(sellPrice)}
+          </div>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[10px] h-[10px]">
+            <div className="w-[8.33px] h-[8.33px] bg-white m-auto mt-[0.83px]"></div>
+          </div>
+        </button>
+      </div>
+
+      {/* Order Cost */}
+      <div className="px-4 pb-4 flex justify-between items-center">
+        <div className="text-[#B7B7B7] text-[10px] font-semibold">Order cost (Margin)</div>
+        <div className="text-[#B7B7B7] text-[10px] font-semibold">0.0000 USDT</div>
       </div>
     </div>
   )
 }
-
