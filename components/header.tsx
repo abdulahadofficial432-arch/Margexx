@@ -87,6 +87,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Top Banner */}
+      <div className="bg-primary/10 border-b border-primary/20 py-2">
+        <div className="container flex items-center justify-center">
+          <span className="text-sm text-muted-foreground">
+            Register. You'll be done in 1 min.{" "}
+            <Link href="/signup" className="text-primary hover:underline font-semibold">
+              Sign Up
+            </Link>
+          </span>
+        </div>
+      </div>
+      
       <div className="container flex items-center justify-between h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -121,20 +133,9 @@ export function Header() {
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
-          {/* Notification Banner */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-secondary/50 rounded-md text-xs">
-            <span className="text-muted-foreground">
-              Register now to claim up to
-              <span className="text-primary ml-1 font-semibold">$10,000 bonuses</span>
-            </span>
-            <Link href="/signup" className="text-primary hover:underline font-semibold">
-              Get Now →
-            </Link>
-          </div>
-
           {/* Auth Buttons */}
           <Link href="/login" className="text-white hover:text-primary transition-colors text-sm">
-            Log In
+            Sign In
           </Link>
           <Link href="/signup">
             <Button className="bg-primary hover:bg-primary/90 text-white text-sm px-4 py-1.5">Sign up</Button>
