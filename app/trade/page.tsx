@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Bell, User, Settings, HelpCircle } from "lucide-react"
+import { Search, Bell, User, Wallet, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TradingViewChart } from "@/components/trading-view-chart"
 import { OrderEntryPanel } from "@/components/order-entry-panel"
@@ -12,29 +12,20 @@ import { TradingTicker } from "@/components/trading-ticker"
 
 export default function TradePage() {
   const [selectedPair, setSelectedPair] = useState("BTCUSD")
-  const [price, setPrice] = useState(91729)
-  const [change24h, setChange24h] = useState(2.04)
-  const [volume24h, setVolume24h] = useState(415938489)
-  const [high24h, setHigh24h] = useState(91843.5)
-  const [low24h, setLow24h] = useState(87863)
+  const [price, setPrice] = useState(91583.5)
+  const [change24h, setChange24h] = useState(1.90)
+  const [volume24h, setVolume24h] = useState(408007294)
 
   // Simulate price updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setPrice(prev => prev + (Math.random() - 0.5) * 50)
+      setPrice(prev => prev + (Math.random() - 0.5) * 100)
     }, 2000)
     return () => clearInterval(interval)
   }, [])
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `$${(num / 1000000).toFixed(2)}M`
-    }
-    return `$${num.toLocaleString()}`
-  }
-
   return (
-    <div className="h-screen bg-[#0a0e27] text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#0a0e27] text-white flex flex-col">
       {/* Top Navigation Bar */}
       <header className="border-b border-gray-800 bg-[#0a0e27]">
         <div className="flex items-center justify-between px-4 h-14">
@@ -51,7 +42,7 @@ export default function TradePage() {
               <Link href="/buy-crypto" className="text-gray-400 hover:text-white transition-colors">
                 Buy Crypto
               </Link>
-              <Link href="/trade" className="text-blue-500 font-semibold">
+              <Link href="/trade" className="text-white font-semibold">
                 Trade
               </Link>
               <Link href="/copy-trading" className="text-gray-400 hover:text-white transition-colors">
@@ -80,8 +71,8 @@ export default function TradePage() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-1.5">
+          <div className="flex items-center gap-3">
+            <Button className="bg-[#22c55e] hover:bg-[#20b855] text-white text-sm px-4 py-1.5">
               Deposit
             </Button>
             <button className="text-gray-400 hover:text-white p-2">
@@ -90,42 +81,13 @@ export default function TradePage() {
             <button className="text-gray-400 hover:text-white p-2">
               <User className="w-5 h-5" />
             </button>
-            <button className="text-gray-400 hover:text-white p-2">
-              <Settings className="w-5 h-5" />
-            </button>
-            <button className="text-gray-400 hover:text-white p-2">
-              <HelpCircle className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Pair Info Bar */}
-        <div className="border-t border-gray-800 px-4 py-2 bg-[#0f1422]">
-          <div className="flex items-center gap-6 text-sm">
-            <div className="font-semibold">{selectedPair}</div>
-            <div className="text-lg font-bold">${price.toLocaleString()}</div>
-            <div className={`text-sm ${change24h >= 0 ? "text-[#22c55e]" : "text-red-500"}`}>
-              24h Change {change24h >= 0 ? "+" : ""}{change24h}%
-            </div>
-            <div className="text-gray-400 text-sm">
-              24h Vol {formatNumber(volume24h)}
-            </div>
-            <div className="text-gray-400 text-sm">
-              High ${high24h.toLocaleString()}
-            </div>
-            <div className="text-gray-400 text-sm">
-              Low ${low24h.toLocaleString()}
-            </div>
-            <div className="text-gray-400 text-sm">
-              Funding 05:29:45
-            </div>
           </div>
         </div>
       </header>
 
       {/* Main Trading Interface */}
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        <div className="flex-1 grid grid-cols-12 gap-0 overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
           {/* Left Panel: Order Entry */}
           <div className="col-span-12 lg:col-span-3 border-r border-gray-800 bg-[#0f1422] flex flex-col">
             <OrderEntryPanel
@@ -133,8 +95,6 @@ export default function TradePage() {
               price={price}
               change24h={change24h}
               volume24h={volume24h}
-              high24h={high24h}
-              low24h={low24h}
             />
           </div>
 

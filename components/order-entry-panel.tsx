@@ -11,22 +11,19 @@ interface OrderEntryPanelProps {
   price: number
   change24h: number
   volume24h: number
-  high24h: number
-  low24h: number
 }
 
-export function OrderEntryPanel({ pair, price, change24h, volume24h, high24h, low24h }: OrderEntryPanelProps) {
+export function OrderEntryPanel({ pair, price, change24h, volume24h }: OrderEntryPanelProps) {
   const [orderType, setOrderType] = useState("Market")
   const [marginMode, setMarginMode] = useState("Isolated")
   const [leverage, setLeverage] = useState(60)
   const [orderSize, setOrderSize] = useState("0")
   const [orderSizeUsd, setOrderSizeUsd] = useState("0")
-  const [showPairDropdown, setShowPairDropdown] = useState(false)
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(num)
   }
 
@@ -37,45 +34,41 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h, high24h, lo
     return `$${num.toLocaleString()}`
   }
 
-  const buyPrice = price
-  const sellPrice = price - 0.5
-
   return (
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-1">Main Trade</h3>
+        <h3 className="text-lg font-semibold mb-2">Main Trade</h3>
         <div className="text-2xl font-bold text-gray-300">0.0 USDT</div>
       </div>
 
-      {/* Trading Pair Selector */}
-      <div className="mb-4 relative">
-        <button
-          onClick={() => setShowPairDropdown(!showPairDropdown)}
-          className="w-full flex items-center justify-between px-3 py-2 bg-gray-900 rounded-lg hover:bg-gray-800"
-        >
+      {/* Trading Pair Info */}
+      <div className="mb-6 p-3 bg-gray-900 rounded-lg">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-lg font-semibold">{pair}</span>
-          <ChevronDown className="w-4 h-4 text-gray-400" />
-        </button>
-        {showPairDropdown && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-800 rounded-lg z-10">
-            <button className="w-full px-3 py-2 text-left hover:bg-gray-800">BTCUSD</button>
-            <button className="w-full px-3 py-2 text-left hover:bg-gray-800">ETHUSD</button>
-            <button className="w-full px-3 py-2 text-left hover:bg-gray-800">SOLUSD</button>
-          </div>
-        )}
+          <span className={`text-sm ${change24h >= 0 ? "text-[#22c55e]" : "text-red-500"}`}>
+            {change24h >= 0 ? "+" : ""}{change24h}%
+          </span>
+        </div>
+        <div className="text-2xl font-bold mb-1">${formatNumber(price)}</div>
+        <div className="text-xs text-gray-400 space-y-1">
+          <div>24h Volume: {formatVolume(volume24h)}</div>
+          <div>24h High: ${formatNumber(91611.5)}</div>
+          <div>24h Low: ${formatNumber(87863)}</div>
+          <div>Funding Time: 05:42:49</div>
+        </div>
       </div>
 
       {/* Order Type Selection */}
       <div className="mb-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-2">
           {["Limit", "Market", "Stop Market"].map((type) => (
             <button
               key={type}
               onClick={() => setOrderType(type)}
               className={`flex-1 px-3 py-2 text-sm rounded ${
                 orderType === type
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[#22c55e] text-white"
                   : "bg-gray-800 text-gray-300 hover:bg-gray-700"
               }`}
             >
@@ -85,14 +78,14 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h, high24h, lo
         </div>
       </div>
 
-      {/* Margin Mode & Leverage */}
+      {/* Margin Mode */}
       <div className="mb-4">
         <div className="flex gap-2 mb-2">
           <button
             onClick={() => setMarginMode("Isolated")}
             className={`flex-1 px-3 py-2 text-sm rounded ${
               marginMode === "Isolated"
-                ? "bg-blue-600 text-white"
+                ? "bg-[#22c55e] text-white"
                 : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
@@ -102,26 +95,26 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h, high24h, lo
             onClick={() => setMarginMode("Cross")}
             className={`flex-1 px-3 py-2 text-sm rounded ${
               marginMode === "Cross"
-                ? "bg-blue-600 text-white"
+                ? "bg-[#22c55e] text-white"
                 : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
             Cross
           </button>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-2">
           <span className="text-sm text-gray-400">Leverage</span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLeverage(Math.max(1, leverage - 1))}
-              className="px-2 py-1 bg-gray-800 rounded text-sm hover:bg-gray-700"
+              className="px-2 py-1 bg-gray-800 rounded text-sm"
             >
               -
             </button>
             <span className="text-sm font-semibold">{leverage}x</span>
             <button
               onClick={() => setLeverage(Math.min(100, leverage + 1))}
-              className="px-2 py-1 bg-gray-800 rounded text-sm hover:bg-gray-700"
+              className="px-2 py-1 bg-gray-800 rounded text-sm"
             >
               +
             </button>
@@ -166,23 +159,19 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h, high24h, lo
       </div>
 
       {/* Buy/Sell Buttons */}
-      <div className="space-y-2 mb-3">
+      <div className="space-y-2">
         <Button
-          className="w-full bg-[#22c55e] hover:bg-[#20b855] text-white font-semibold py-6 text-base"
+          className="w-full bg-[#22c55e] hover:bg-[#20b855] text-white font-semibold py-6"
         >
-          Buy / Market ${formatNumber(buyPrice)}
+          Buy / Market
         </Button>
         <Button
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-6 text-base"
+          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-6"
         >
-          Sell / Market ${formatNumber(sellPrice)}
+          Sell / Market
         </Button>
-      </div>
-
-      {/* Order Cost */}
-      <div className="text-sm text-gray-400 text-center">
-        Order cost (Margin) 0.0000 USDT
       </div>
     </div>
   )
 }
+

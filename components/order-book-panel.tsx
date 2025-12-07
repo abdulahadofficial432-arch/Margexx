@@ -9,37 +9,40 @@ interface OrderBookPanelProps {
 
 export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
   const [activeTab, setActiveTab] = useState<"orderbook" | "trades">("orderbook")
-  const [hideOtherAssets, setHideOtherAssets] = useState(false)
 
-  // Mock order book data - updated to match image
+  // Mock order book data
   const sellOrders = [
-    { price: 91732.0, quantity: 12.5, total: 1146650 },
-    { price: 91731.5, quantity: 8.3, total: 760371.45 },
-    { price: 91731.0, quantity: 15.2, total: 1392311.2 },
-    { price: 91730.5, quantity: 6.7, total: 614594.35 },
-    { price: 91730.0, quantity: 9.1, total: 834743 },
-    { price: 91729.5, quantity: 11.4, total: 1045716.3 },
+    { price: 91575.0, quantity: 12.5, total: 1144687.5 },
+    { price: 91574.5, quantity: 8.3, total: 759668.35 },
+    { price: 91574.0, quantity: 15.2, total: 1391924.8 },
+    { price: 91573.5, quantity: 6.7, total: 613542.45 },
+    { price: 91573.0, quantity: 9.1, total: 833314.3 },
+    { price: 91572.5, quantity: 11.4, total: 1043926.5 },
+    { price: 91572.0, quantity: 7.8, total: 714261.6 },
+    { price: 91571.5, quantity: 13.6, total: 1245372.4 },
   ]
 
   const buyOrders = [
-    { price: 91728.5, quantity: 10.2, total: 935630.7 },
-    { price: 91728.0, quantity: 14.5, total: 1330056 },
-    { price: 91727.5, quantity: 9.8, total: 898929.5 },
-    { price: 91727.0, quantity: 12.3, total: 1128242.1 },
-    { price: 91726.5, quantity: 8.7, total: 798020.55 },
-    { price: 91726.0, quantity: 11.1, total: 1018158.6 },
+    { price: 91579.0, quantity: 10.2, total: 934105.8 },
+    { price: 91579.5, quantity: 14.5, total: 1327902.75 },
+    { price: 91580.0, quantity: 9.8, total: 897484.0 },
+    { price: 91580.5, quantity: 12.3, total: 1126440.15 },
+    { price: 91581.0, quantity: 8.7, total: 796754.7 },
+    { price: 91581.5, quantity: 11.1, total: 1016554.65 },
+    { price: 91582.0, quantity: 6.4, total: 586124.8 },
+    { price: 91582.5, quantity: 15.9, total: 1456061.75 },
   ]
 
   // Mock last trades
   const lastTrades = [
-    { price: 91729, quantity: 537, time: "18:30:14", type: "buy" },
-    { price: 91728.5, quantity: 234, time: "18:30:13", type: "sell" },
-    { price: 91729.5, quantity: 156, time: "18:30:12", type: "buy" },
-    { price: 91728, quantity: 89, time: "18:30:11", type: "sell" },
-    { price: 91730, quantity: 445, time: "18:30:10", type: "buy" },
-    { price: 91727.5, quantity: 123, time: "18:30:09", type: "sell" },
-    { price: 91730.5, quantity: 678, time: "18:30:08", type: "buy" },
-    { price: 91727, quantity: 345, time: "18:30:07", type: "sell" },
+    { price: 91583.5, quantity: 36, time: "18:17:11", type: "buy" },
+    { price: 91583.0, quantity: 12, time: "18:17:08", type: "sell" },
+    { price: 91584.0, quantity: 25, time: "18:17:05", type: "buy" },
+    { price: 91582.5, quantity: 8, time: "18:17:02", type: "sell" },
+    { price: 91585.0, quantity: 45, time: "18:16:59", type: "buy" },
+    { price: 91581.0, quantity: 19, time: "18:16:56", type: "sell" },
+    { price: 91586.0, quantity: 32, time: "18:16:53", type: "buy" },
+    { price: 91580.5, quantity: 14, time: "18:16:50", type: "sell" },
   ]
 
   const formatNumber = (num: number) => {
@@ -55,9 +58,6 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
       maximumFractionDigits: 1,
     }).format(num)
   }
-
-  const buyPercentage = 31
-  const sellPercentage = 69
 
   return (
     <div className="flex flex-col h-full">
@@ -87,7 +87,7 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
 
       <div className="flex-1 overflow-y-auto">
         {activeTab === "orderbook" ? (
-          <div className="p-3">
+          <div className="p-4">
             {/* Order Book Header */}
             <div className="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2 pb-2 border-b border-gray-800">
               <div>Price, $</div>
@@ -96,11 +96,11 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
             </div>
 
             {/* Sell Orders (Red) */}
-            <div className="mb-2">
+            <div className="mb-4">
               {sellOrders.map((order, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-0.5 hover:bg-gray-900/50 cursor-pointer"
+                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
                 >
                   <div className="text-red-500">{formatPrice(order.price)}</div>
                   <div className="text-right text-gray-300">{formatNumber(order.quantity)}</div>
@@ -112,19 +112,19 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
             </div>
 
             {/* Current Price */}
-            <div className="py-2 border-y border-gray-800 my-2">
+            <div className="py-3 border-y border-gray-800 my-2">
               <div className="text-center">
-                <div className="text-base font-bold text-white">${formatPrice(currentPrice)}</div>
-                <div className="text-xs text-gray-400 mt-1">239</div>
+                <div className="text-lg font-bold text-white">${formatPrice(currentPrice)}</div>
+                <div className="text-xs text-gray-400 mt-1">Buy: 35% / Sell: 65%</div>
               </div>
             </div>
 
             {/* Buy Orders (Green) */}
-            <div className="mb-3">
+            <div>
               {buyOrders.map((order, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-0.5 hover:bg-gray-900/50 cursor-pointer"
+                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
                 >
                   <div className="text-[#22c55e]">{formatPrice(order.price)}</div>
                   <div className="text-right text-gray-300">{formatNumber(order.quantity)}</div>
@@ -134,31 +134,9 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
                 </div>
               ))}
             </div>
-
-            {/* Buy/Sell Ratio Bar */}
-            <div className="mb-3">
-              <div className="flex h-4 rounded overflow-hidden">
-                <div
-                  className="bg-[#22c55e] flex items-center justify-center text-xs font-semibold"
-                  style={{ width: `${buyPercentage}%` }}
-                >
-                  {buyPercentage}%
-                </div>
-                <div
-                  className="bg-red-500 flex items-center justify-center text-xs font-semibold"
-                  style={{ width: `${sellPercentage}%` }}
-                >
-                  {sellPercentage}%
-                </div>
-              </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>Buy: {buyPercentage}%</span>
-                <span>Sell: {sellPercentage}%</span>
-              </div>
-            </div>
           </div>
         ) : (
-          <div className="p-3">
+          <div className="p-4">
             {/* Last Trades Header */}
             <div className="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2 pb-2 border-b border-gray-800">
               <div>Price, $</div>
@@ -171,7 +149,7 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
               {lastTrades.map((trade, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-0.5 hover:bg-gray-900/50 cursor-pointer"
+                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
                 >
                   <div className={trade.type === "buy" ? "text-[#22c55e]" : "text-red-500"}>
                     {formatPrice(trade.price)}
@@ -181,22 +159,10 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
                 </div>
               ))}
             </div>
-
-            {/* Hide Other Assets Checkbox */}
-            <div className="mt-4 pt-3 border-t border-gray-800">
-              <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={hideOtherAssets}
-                  onChange={(e) => setHideOtherAssets(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-700 bg-gray-900 text-[#22c55e] focus:ring-[#22c55e]"
-                />
-                Hide other assets
-              </label>
-            </div>
           </div>
         )}
       </div>
     </div>
   )
 }
+
