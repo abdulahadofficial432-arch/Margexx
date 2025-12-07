@@ -7,13 +7,11 @@ import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
   return (
-    <section className="min-h-screen bg-[#0a1428] relative overflow-hidden pt-20 pb-12 md:pb-0">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0, 102, 255, 0.15) 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }}></div>
+    <section className="min-h-screen bg-background relative overflow-hidden pt-20 pb-12 md:pb-0">
+      {/* Diagonal Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12">
@@ -21,14 +19,18 @@ export function HeroSection() {
         <div className="text-center lg:text-left">
           <div className="mb-6 inline-block lg:block">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-              Your Crypto trading boutique
+              Your <span className="text-[#22c55e]">Crypto</span> trading boutique
             </h1>
           </div>
 
+          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
+            The best way to trade crypto with the lowest fees and highest liquidity.
+          </p>
+
           {/* CTA Button */}
           <div className="mb-8 max-w-md mx-auto lg:mx-0">
-            <Button className="bg-gradient-to-r from-[#0066ff] to-[#0052cc] hover:opacity-90 text-white font-semibold px-8 py-6 text-lg">
-              Get Started
+            <Button className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-6 text-lg">
+              Start Now
             </Button>
           </div>
         </div>
@@ -60,26 +62,17 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* QR Code and App Store Links - Positioned next to mobile frame */}
-          <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-4">
-            <div className="bg-card border border-border rounded-lg p-4 backdrop-blur-sm">
-              <div className="w-32 h-32 relative">
-                <Image
-                  src="/media/qr for hero section.png"
-                  alt="QR Code"
-                  fill
-                  className="object-contain rounded-md"
-                />
-              </div>
+          {/* QR Code - Positioned below mobile frame */}
+          <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-card border border-border rounded-lg p-4 backdrop-blur-sm">
+            <div className="w-32 h-32 relative">
+              <Image
+                src="/media/qr for hero section.png"
+                alt="QR Code"
+                fill
+                className="object-contain rounded-md"
+              />
             </div>
-            <div className="flex gap-3">
-              <Link href="#" className="text-white hover:opacity-80 transition-opacity">
-                <Apple className="w-6 h-6" />
-              </Link>
-              <Link href="#" className="text-white hover:opacity-80 transition-opacity">
-                <Play className="w-6 h-6" />
-              </Link>
-            </div>
+            <p className="text-xs text-muted-foreground text-center mt-2">Scan to Download</p>
           </div>
         </div>
       </div>

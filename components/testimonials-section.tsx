@@ -27,44 +27,9 @@ export function TestimonialsSection() {
   ]
 
   return (
-    <section className="section bg-[#0a1428]">
+    <section className="section bg-background">
       <div className="container">
-        <h2 className="text-4xl font-bold text-white text-center mb-12">Media-Recognized, Client-Trusted</h2>
-
-        {/* Media Logos */}
-        <div className="flex justify-center items-center gap-8 flex-wrap mb-12 overflow-x-auto">
-          <div className="text-white font-semibold text-sm whitespace-nowrap">Investing.com</div>
-          <div className="text-white font-semibold text-sm whitespace-nowrap">CoinMarketCap</div>
-          <div className="text-white font-semibold text-sm whitespace-nowrap">BENZINGA</div>
-          <div className="text-white font-semibold text-sm whitespace-nowrap">yahoo!</div>
-          <div className="text-white font-semibold text-sm whitespace-nowrap">MarketWatch</div>
-          <div className="text-white font-semibold text-sm whitespace-nowrap">BUSINESS INSIDER</div>
-        </div>
-
-        {/* App Ratings */}
-        <div className="flex justify-center gap-8 mb-12">
-          <div className="text-center">
-            <div className="flex gap-1 justify-center mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <p className="text-white font-semibold mb-1">4.6</p>
-            <p className="text-muted-foreground text-sm">App Store</p>
-          </div>
-          <div className="text-center">
-            <div className="flex gap-1 justify-center mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <p className="text-white font-semibold mb-1">4.7</p>
-            <p className="text-muted-foreground text-sm">Google Play</p>
-          </div>
-        </div>
-
-        {/* Testimonials */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {testimonials.map((testimonial, idx) => (
             <div key={idx} className="bg-card border border-border rounded-lg p-6">
               <div className="flex gap-1 mb-4">
@@ -78,11 +43,36 @@ export function TestimonialsSection() {
           ))}
         </div>
 
-        {/* Navigation Dots */}
-        <div className="flex justify-center gap-2">
-          <div className="w-2 h-2 bg-primary rounded-full"></div>
-          <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
-          <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+        {/* App Ratings */}
+        <div className="flex justify-center gap-8 mb-12">
+          <div className="text-center">
+            <div className="flex gap-1 justify-center mb-2">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-white font-semibold mb-1">4.8</p>
+            <p className="text-muted-foreground text-sm">App Store</p>
+          </div>
+          <div className="text-center">
+            <div className="flex gap-1 justify-center mb-2">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-white font-semibold mb-1">4.3</p>
+            <p className="text-muted-foreground text-sm">Google Play</p>
+          </div>
+        </div>
+
+        {/* Media Mentions */}
+        <div className="border-t border-border pt-8">
+          <p className="text-muted-foreground text-center text-sm mb-6">As featured in:</p>
+          <div className="flex justify-center items-center gap-8 flex-wrap opacity-60">
+            <div className="text-white font-semibold">MarketWatch</div>
+            <div className="text-white font-semibold">Business Insider</div>
+            <div className="text-white font-semibold">Investing.com</div>
+          </div>
         </div>
       </div>
     </section>

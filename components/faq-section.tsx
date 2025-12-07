@@ -9,24 +9,28 @@ export function FAQSection() {
   const faqs = [
     {
       question: "What is Margex?",
-      answer: "",
+      answer:
+        "Margex is a leading cryptocurrency trading platform that offers spot trading, futures trading, margin trading, and copy trading features. We provide the best way to trade crypto with the lowest fees and highest liquidity.",
     },
     {
       question: "How do I buy Bitcoin or other cryptocurrency on Margex?",
-      answer: "",
+      answer:
+        "To buy cryptocurrency on Margex, first create an account and complete the verification process. Then, deposit funds using your preferred payment method. Once your account is funded, navigate to the Markets section, select the cryptocurrency you want to buy, and place your order.",
     },
     {
       question: "How do you protect users' funds?",
-      answer: "",
+      answer:
+        "We use industry-leading security measures including cold storage for the majority of funds, multi-signature wallets, two-factor authentication, and regular security audits. We have never lost any client funds and maintain a 100% security record.",
     },
     {
       question: "I need help and want to chat with a real person.",
-      answer: "",
+      answer:
+        "Our 24/7 customer support team is always available to help you. You can reach us through live chat on our platform, email support, or through our social media channels. We're committed to providing excellent customer service.",
     },
   ]
 
   return (
-    <section className="section bg-[#0a1428]">
+    <section className="section bg-background">
       <div className="container">
         <h2 className="text-4xl font-bold text-white text-center mb-12">Got Questions?</h2>
 

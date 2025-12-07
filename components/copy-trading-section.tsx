@@ -1,13 +1,11 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Apple, Play } from "lucide-react"
 
 export function CopyTradingSection() {
   return (
-    <section className="section bg-[#0a1428]">
+    <section className="section bg-background">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
@@ -15,6 +13,9 @@ export function CopyTradingSection() {
             <h2 className="text-4xl font-bold text-white mb-4">
               Copy Trading: Let Top Traders Work for You
             </h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Copy experienced traders and earn profits effortlessly.
+            </p>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 mb-8">
@@ -24,27 +25,27 @@ export function CopyTradingSection() {
               </div>
               <div>
                 <div className="text-3xl font-bold text-white mb-2">500k+</div>
-                <p className="text-muted-foreground text-sm">Copy Traders</p>
+                <p className="text-muted-foreground text-sm">Copied Investors</p>
               </div>
               <div>
                 <div className="text-3xl font-bold text-white mb-2">1 click</div>
-                <p className="text-muted-foreground text-sm">to start</p>
+                <p className="text-muted-foreground text-sm">To Start</p>
               </div>
             </div>
 
             {/* CTA Button */}
-            <Button className="bg-gradient-to-r from-[#0066ff] to-[#0052cc] hover:opacity-90 text-white font-semibold px-8 py-6 text-lg mb-8">
+            <Button className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-6 text-lg mb-8">
               Start Copy Trading
             </Button>
 
             {/* App Download Icons */}
             <div className="flex gap-4">
-              <Link href="#" className="text-white hover:opacity-80 transition-opacity">
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
                 <Apple className="w-8 h-8" />
-              </Link>
-              <Link href="#" className="text-white hover:opacity-80 transition-opacity">
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
                 <Play className="w-8 h-8" />
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -72,28 +73,6 @@ export function CopyTradingSection() {
                     </video>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* QR Code and App Store Links - Positioned next to mobile frame */}
-            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-4">
-              <div className="bg-card border border-border rounded-lg p-4 backdrop-blur-sm">
-                <div className="w-32 h-32 relative">
-                  <Image
-                    src="/media/qr for hero section.png"
-                    alt="QR Code"
-                    fill
-                    className="object-contain rounded-md"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Link href="#" className="text-white hover:opacity-80 transition-opacity">
-                  <Apple className="w-6 h-6" />
-                </Link>
-                <Link href="#" className="text-white hover:opacity-80 transition-opacity">
-                  <Play className="w-6 h-6" />
-                </Link>
               </div>
             </div>
           </div>

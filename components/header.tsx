@@ -45,39 +45,90 @@ export function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const navItems = [
-    { title: "Buy Crypto", href: "/buy-crypto" },
+    {
+      title: "Buy Crypto",
+      href: "/buy-crypto",
+      dropdown: [
+        { label: "BTC", href: "/buy-crypto/btc" },
+        { label: "ETH", href: "/buy-crypto/eth" },
+        { label: "View All", href: "/buy-crypto" },
+      ],
+    },
     { title: "Markets", href: "/markets" },
-    { title: "Trade", href: "/trade" },
-    { title: "Copy Trading", href: "/copy-trading" },
+    {
+      title: "Trade",
+      href: "/trade",
+      dropdown: [
+        { label: "Spot Trading", href: "/trade/spot" },
+        { label: "Margin Trading", href: "/trade/margin" },
+        { label: "Futures", href: "/trade/futures" },
+      ],
+    },
+    { title: "Price Alerts", href: "/price-alerts" },
+    {
+      title: "Copy Trading",
+      href: "/copy-trading",
+      dropdown: [
+        { label: "Top Traders", href: "/copy-trading/traders" },
+        { label: "Leaderboard", href: "/copy-trading/leaderboard" },
+      ],
+    },
     { title: "Earn", href: "/earn" },
+    {
+      title: "Learn",
+      href: "/learn",
+      dropdown: [
+        { label: "Trading Guide", href: "/learn/trading-guide" },
+        { label: "Blog", href: "/learn/blog" },
+      ],
+    },
     { title: "More", href: "#" },
   ]
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-[#0a1428] backdrop-blur supports-[backdrop-filter]:bg-[#0a1428]/95">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Top Banner */}
+      <div className="bg-primary/10 border-b border-primary/20 py-2">
+        <div className="container flex items-center justify-center">
+          <span className="text-sm text-muted-foreground">
+            Register. You'll be done in 1 min.{" "}
+            <Link href="/signup" className="text-primary hover:underline font-semibold">
+              Sign Up
+            </Link>
+          </span>
+        </div>
+      </div>
+      
       <div className="container flex items-center justify-between h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-primary rounded flex items-center justify-center relative">
+          <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
             <span className="text-white font-bold text-xs">M</span>
-            <svg className="absolute -bottom-0.5 -right-0.5 w-3 h-3 text-[#22c55e]" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
           </div>
           <span className="text-white font-bold text-lg hidden sm:inline">MARGEX</span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-white hover:text-primary transition-colors px-3 py-2 text-sm"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            item.dropdown ? (
+              <DropdownMenu
+                key={item.title}
+                title={item.title}
+                items={item.dropdown}
+                isOpen={openDropdown === item.title}
+                onToggle={() => setOpenDropdown(openDropdown === item.title ? null : item.title)}
+              />
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-white hover:text-primary transition-colors px-3 py-2 text-sm"
+              >
+                {item.title}
+              </Link>
+            ),
+          )}
         </nav>
 
         {/* Right Section */}
@@ -87,8 +138,19 @@ export function Header() {
             Sign In
           </Link>
           <Link href="/signup">
-            <Button className="bg-gradient-to-r from-[#0066ff] to-[#0052cc] hover:opacity-90 text-white text-sm px-4 py-1.5 font-semibold">Sign Up</Button>
+            <Button className="bg-primary hover:bg-primary/90 text-white text-sm px-4 py-1.5">Sign up</Button>
           </Link>
+
+          {/* Theme Toggle (placeholder) */}
+          <button className="text-muted-foreground hover:text-foreground transition-colors p-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="12" cy="2" r="1.5" />
+              <circle cx="12" cy="22" r="1.5" />
+              <circle cx="2" cy="12" r="1.5" />
+              <circle cx="22" cy="12" r="1.5" />
+            </svg>
+          </button>
 
           {/* Mobile Menu Toggle */}
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white p-2">
