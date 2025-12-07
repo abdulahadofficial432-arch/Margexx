@@ -12,17 +12,31 @@ export function FeaturesSection() {
         </p>
 
         {/* Video Section */}
-        <div className="bg-card border border-border rounded-lg overflow-hidden mb-12 relative min-h-[500px]">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/media/2nd section video.mp4" type="video/mp4" />
-            <source src="/media/3rd section video.mp4" type="video/mp4" />
-          </video>
+        <div className="flex justify-center mb-12">
+          {/* Mobile Phone Frame */}
+          <div className="relative mx-auto" style={{ width: '320px', height: '640px' }}>
+            {/* Phone Frame */}
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900 rounded-[3rem] p-3 shadow-2xl">
+              {/* Screen Bezel */}
+              <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative">
+                {/* Notch */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10"></div>
+                
+                {/* Video Content */}
+                <div className="w-full h-full relative">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src="/media/3rd section video.mp4" type="video/mp4" />
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Stats */}
