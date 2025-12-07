@@ -15,7 +15,7 @@ export function PositionsPanel() {
   ]
 
   return (
-    <div className="flex flex-col h-48">
+    <div className="flex flex-col" style={{ height: "200px" }}>
       {/* Tabs */}
       <div className="flex border-b border-gray-800">
         {tabs.map((tab) => (

@@ -204,4 +204,20 @@
   .animate-scroll {
     animation: scroll 30s linear infinite;
   }
+
+  /* Trading page specific styles */
+  .trading-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .trading-grid {
+    height: calc(100vh - 14rem);
+  }
+
+  @media (max-width: 1024px) {
+    .trading-grid {
+      height: auto;
+    }
+  }
 }
