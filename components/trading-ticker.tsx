@@ -1,62 +1,98 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import { MessageCircle, HelpCircle, GraduationCap, BookOpen, X } from "lucide-react"
+
 export function TradingTicker() {
+  const [currentTime, setCurrentTime] = useState("10:58:40")
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      const hours = now.getUTCHours().toString().padStart(2, "0")
+      const minutes = now.getUTCMinutes().toString().padStart(2, "0")
+      const seconds = now.getUTCSeconds().toString().padStart(2, "0")
+      setCurrentTime(`${hours}:${minutes}:${seconds}`)
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   const tickers = [
-    { symbol: "ASTER/USD", change: -3.08, price: 0.955 },
-    { symbol: "HYPE/USD", change: -6.21, price: 29.502 },
-    { symbol: "BTC/USD", change: 1.90, price: 91583.5 },
-    { symbol: "ETH/USD", change: 0.16, price: 3053.25 },
-    { symbol: "SOL/USD", change: 2.45, price: 133.75 },
-    { symbol: "ADA/USD", change: -1.23, price: 0.4285 },
-    { symbol: "BNB/USD", change: 0.01, price: 613.9 },
-    { symbol: "LTC/USD", change: 0.02, price: 160.41 },
-    { symbol: "UNI/USD", change: 1.15, price: 5.42 },
-    { symbol: "DOT/USD", change: -0.85, price: 6.23 },
+    { symbol: "ALGO/USD", change: -1.47, price: 0.01581 },
+    { symbol: "1KBONK/USD", change: -3.35, price: 0.2275 },
+    { symbol: "JASMY/USD", change: -1.60, price: 0.01989 },
+    { symbol: "ICP/USD", change: -0.56, price: 0.01411 },
+    { symbol: "1KFLOKI/USDT", change: 0, price: 4.756 },
   ]
 
   const formatPrice = (price: number) => {
     if (price < 1) {
-      return price.toFixed(4)
+      return price.toFixed(5)
     }
     if (price < 100) {
-      return price.toFixed(2)
+      return price.toFixed(3)
     }
     return price.toLocaleString(undefined, { maximumFractionDigits: 2 })
   }
 
   return (
-    <div className="bg-[#0a0e27] border-t border-gray-800 py-2 px-4">
-      <div className="flex items-center gap-6 text-xs">
+    <div className="h-[21px] bg-[#131622] border-t border-gray-800 px-4 flex items-center justify-between text-[10px] font-semibold">
+      {/* Left Side */}
+      <div className="flex items-center gap-4">
         {/* Connection Status */}
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-[#22c55e] rounded-full animate-pulse"></div>
-          <span className="text-gray-400">Connected</span>
+          <div className="w-[14.7px] h-[7.38px] bg-[#07B823] transform rotate-[49deg]"></div>
+          <span className="text-[#07B823] tracking-[0.20px]">Connection</span>
         </div>
-
-        {/* New Listings */}
-        <div className="text-gray-400">
-          <span className="text-[#22c55e]">NEW:</span> ASTER, HYPE
-        </div>
+        <span className="text-[#B7B7B7]">{currentTime} UTC</span>
+        <span className="text-[#B7B7B7]">New listings</span>
 
         {/* Ticker Items */}
-        <div className="flex items-center gap-6 overflow-x-auto flex-1">
-          {tickers.map((ticker, idx) => (
-            <div key={idx} className="flex items-center gap-2 whitespace-nowrap">
-              <span className="text-gray-300 font-medium">{ticker.symbol}</span>
+        {tickers.map((ticker, idx) => (
+          <div key={idx} className="flex items-center gap-2">
+            <span className="text-[#B7B7B7]">${formatPrice(ticker.price)}</span>
+            <span className="text-[#B7B7B7]">{ticker.symbol}</span>
+            {ticker.change !== 0 && (
               <span
                 className={`font-semibold ${
-                  ticker.change >= 0 ? "text-[#22c55e]" : "text-red-500"
+                  ticker.change >= 0 ? "text-[#34CD26]" : "text-[#FF0000]"
                 }`}
               >
                 {ticker.change >= 0 ? "+" : ""}
                 {ticker.change.toFixed(2)}%
               </span>
-              <span className="text-gray-400">${formatPrice(ticker.price)}</span>
-            </div>
-          ))}
-        </div>
+            )}
+            {idx < tickers.length - 1 && (
+              <div className="w-[1px] h-[15px] bg-[#B7B7B7]"></div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Right Side Icons */}
+      <div className="flex items-center gap-4">
+        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
+          <MessageCircle className="w-3 h-3" />
+          <span>Live chat</span>
+        </button>
+        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
+          <HelpCircle className="w-3 h-3" />
+          <span>Help Center</span>
+        </button>
+        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
+          <GraduationCap className="w-3 h-3" />
+          <span>Tutorials</span>
+        </button>
+        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
+          <BookOpen className="w-3 h-3" />
+          <span>Guides</span>
+        </button>
+        <button className="text-white hover:text-gray-300 transition-colors">
+          <X className="w-3 h-3" />
+        </button>
       </div>
     </div>
   )
 }
-

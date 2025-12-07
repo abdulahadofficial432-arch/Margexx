@@ -10,46 +10,43 @@ interface OrderBookPanelProps {
 export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
   const [activeTab, setActiveTab] = useState<"orderbook" | "trades">("orderbook")
 
-  // Mock order book data
+  // Mock order book data - matching the design
   const sellOrders = [
-    { price: 91575.0, quantity: 12.5, total: 1144687.5 },
-    { price: 91574.5, quantity: 8.3, total: 759668.35 },
-    { price: 91574.0, quantity: 15.2, total: 1391924.8 },
-    { price: 91573.5, quantity: 6.7, total: 613542.45 },
-    { price: 91573.0, quantity: 9.1, total: 833314.3 },
-    { price: 91572.5, quantity: 11.4, total: 1043926.5 },
-    { price: 91572.0, quantity: 7.8, total: 714261.6 },
-    { price: 91571.5, quantity: 13.6, total: 1245372.4 },
+    { price: 111045.5, quantity: 11925, total: 10789300 },
+    { price: 111045, quantity: 11925, total: 10789300 },
+    { price: 111045.5, quantity: 11925, total: 10789300 },
+    { price: 111045, quantity: 11925, total: 10789300 },
+    { price: 111045.5, quantity: 11925, total: 10789300 },
+    { price: 111045, quantity: 11925, total: 10789300 },
+    { price: 111045.5, quantity: 11925, total: 10789300 },
+    { price: 111045, quantity: 11925, total: 10789300 },
+    { price: 111045.5, quantity: 11925, total: 10789300 },
   ]
 
   const buyOrders = [
-    { price: 91579.0, quantity: 10.2, total: 934105.8 },
-    { price: 91579.5, quantity: 14.5, total: 1327902.75 },
-    { price: 91580.0, quantity: 9.8, total: 897484.0 },
-    { price: 91580.5, quantity: 12.3, total: 1126440.15 },
-    { price: 91581.0, quantity: 8.7, total: 796754.7 },
-    { price: 91581.5, quantity: 11.1, total: 1016554.65 },
-    { price: 91582.0, quantity: 6.4, total: 586124.8 },
-    { price: 91582.5, quantity: 15.9, total: 1456061.75 },
+    { price: 111045, quantity: 11045, total: 11045 },
+    { price: 111045, quantity: 11045, total: 11045 },
+    { price: 111045, quantity: 111045, total: 111045 },
+    { price: 111045, quantity: 111045, total: 111045 },
+    { price: 111045, quantity: 111045, total: 111045 },
+    { price: 111045, quantity: 111045, total: 111045 },
+    { price: 1111045, quantity: 1111045, total: 1111045 },
+    { price: 1111045, quantity: 1111045, total: 1111045 },
+    { price: 1111045, quantity: 1111045, total: 1111045 },
   ]
 
   // Mock last trades
   const lastTrades = [
-    { price: 91583.5, quantity: 36, time: "18:17:11", type: "buy" },
-    { price: 91583.0, quantity: 12, time: "18:17:08", type: "sell" },
-    { price: 91584.0, quantity: 25, time: "18:17:05", type: "buy" },
-    { price: 91582.5, quantity: 8, time: "18:17:02", type: "sell" },
-    { price: 91585.0, quantity: 45, time: "18:16:59", type: "buy" },
-    { price: 91581.0, quantity: 19, time: "18:16:56", type: "sell" },
-    { price: 91586.0, quantity: 32, time: "18:16:53", type: "buy" },
-    { price: 91580.5, quantity: 14, time: "18:16:50", type: "sell" },
+    { price: 111034, quantity: 359, time: "19:51:45", type: "buy" },
+    { price: 111033.5, quantity: 20, time: "19:51:44", type: "sell" },
+    { price: 111034.5, quantity: 16, time: "19:51:45", type: "sell" },
+    { price: 111032.5, quantity: 13, time: "19:51:45", type: "sell" },
+    { price: 111034, quantity: 123, time: "19:51:42", type: "buy" },
+    { price: 111034, quantity: 567, time: "19:51:41", type: "buy" },
   ]
 
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    }).format(num)
+    return new Intl.NumberFormat("en-US").format(num)
   }
 
   const formatPrice = (num: number) => {
@@ -60,109 +57,154 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#131622]">
+      {activeTab === "orderbook" ? (
+        <>
+          {/* Order Book Header */}
+          <div className="px-3 py-2 border-b border-gray-800">
+            <div className="text-white text-[12px] font-semibold tracking-[0.12px] mb-2">
+              Order Book
+            </div>
+            <div className="flex items-center gap-4 text-[10px] text-white font-semibold">
+              <div className="text-[11px] tracking-[0.11px]">Quantity</div>
+              <div className="text-[10px]">Total, $</div>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="w-[14px] h-[4px] bg-[#FF0909]"></div>
+              <div className="w-[14px] h-[4px] bg-[#FF0909]"></div>
+              <div className="w-[14px] h-[4px] bg-[#49526C]"></div>
+              <div className="w-[14px] h-[4px] bg-[#15FF09]"></div>
+              <div className="w-[14px] h-[4px] bg-[#15FF09]"></div>
+              <div className="w-[14px] h-[4px] bg-[#49526C]"></div>
+            </div>
+          </div>
+
+          {/* Sell Orders (Red) with gradient backgrounds */}
+          <div className="flex-1 overflow-y-auto relative">
+            <div className="absolute inset-0">
+              {sellOrders.map((order, idx) => (
+                <div
+                  key={idx}
+                  className="relative px-3 py-0.5 hover:bg-gray-900/30 cursor-pointer"
+                  style={{
+                    background: idx === 0 
+                      ? "linear-gradient(0deg, rgba(255, 0, 0, 0.20) 0%, rgba(153, 0, 0, 0.01) 100%)"
+                      : idx < 9
+                      ? `rgba(255, 0, 0, ${0.20 - idx * 0.02})`
+                      : "transparent",
+                  }}
+                >
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="text-[#D50000] font-semibold">{formatPrice(order.price)}</div>
+                    <div className="text-white font-semibold">{formatNumber(order.quantity)}</div>
+                    <div className="text-white text-[10px] font-semibold">
+                      {formatNumber(order.total)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Current Price Separator */}
+              <div className="h-[23px] bg-[#131622] flex items-center justify-between px-3 border-y border-gray-800">
+                <div className="text-[#34CD26] text-[12px] font-semibold tracking-[1.08px]">
+                  {formatPrice(currentPrice)}
+                </div>
+                <div className="text-[#B7B7B7] text-[12px] font-semibold tracking-[0.12px]">12</div>
+              </div>
+
+              {/* Buy Orders (Green) with gradient backgrounds */}
+              {buyOrders.map((order, idx) => (
+                <div
+                  key={idx}
+                  className="relative px-3 py-0.5 hover:bg-gray-900/30 cursor-pointer"
+                  style={{
+                    background: idx < 6
+                      ? `rgba(13, 255, 0, ${0.20 - idx * 0.03})`
+                      : "transparent",
+                  }}
+                >
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="text-[#34CD26] font-semibold">{formatPrice(order.price)}</div>
+                    <div className="text-white font-semibold">{formatNumber(order.quantity)}</div>
+                    <div className="text-white text-[10px] font-semibold">
+                      {formatNumber(order.total)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Buy/Sell Ratio Bar */}
+          <div className="px-3 py-2 border-t border-gray-800">
+            <div className="flex h-[1px] rounded-[2px] overflow-hidden mb-1">
+              <div className="bg-[#00FF09] flex-1" style={{ width: "40%" }}></div>
+              <div className="bg-[#FF0000] flex-1" style={{ width: "60%" }}></div>
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <div className="text-[#00FF08] font-semibold">Buy: 40%</div>
+              <div className="text-[#F90B0B] font-semibold">Sell: 60%</div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col h-full">
+          <div className="px-3 py-2 border-b border-gray-800">
+            <div className="text-white text-[12px] font-semibold">Last Trades</div>
+          </div>
+          <div className="flex-1 overflow-y-auto px-3 py-2">
+            <div className="flex items-center justify-between text-[10px] text-white font-semibold mb-2 pb-1 border-b border-gray-800">
+              <div className="tracking-[0.30px]">Price, $</div>
+              <div className="tracking-[0.30px]">Quantity</div>
+              <div className="tracking-[0.30px]">Time</div>
+            </div>
+            <div>
+              {lastTrades.map((trade, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between py-1 text-[11px] hover:bg-gray-900/30 cursor-pointer"
+                >
+                  <div
+                    className={
+                      trade.type === "buy"
+                        ? "text-[#34CD26] font-semibold tracking-[0.30px]"
+                        : "text-[#D50000] font-semibold"
+                    }
+                  >
+                    {formatPrice(trade.price)}
+                  </div>
+                  <div className="text-white font-semibold">{trade.quantity}</div>
+                  <div className="text-white font-semibold">{trade.time}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
-      <div className="flex border-b border-gray-800">
+      <div className="flex border-t border-gray-800">
         <button
           onClick={() => setActiveTab("orderbook")}
-          className={`flex-1 px-4 py-2 text-sm font-medium ${
+          className={`flex-1 px-3 py-2 text-[10px] font-semibold ${
             activeTab === "orderbook"
-              ? "text-white border-b-2 border-[#22c55e]"
-              : "text-gray-400 hover:text-white"
+              ? "text-[#3179FF] border-b-2 border-[#3179FF]"
+              : "text-[#E1E2E3] hover:text-white"
           }`}
         >
           Order Book
         </button>
         <button
           onClick={() => setActiveTab("trades")}
-          className={`flex-1 px-4 py-2 text-sm font-medium ${
+          className={`flex-1 px-3 py-2 text-[10px] font-semibold ${
             activeTab === "trades"
-              ? "text-white border-b-2 border-[#22c55e]"
-              : "text-gray-400 hover:text-white"
+              ? "text-[#3179FF] border-b-2 border-[#3179FF]"
+              : "text-[#E1E2E3] hover:text-white"
           }`}
         >
           Last Trades
         </button>
       </div>
-
-      <div className="flex-1 overflow-y-auto">
-        {activeTab === "orderbook" ? (
-          <div className="p-4">
-            {/* Order Book Header */}
-            <div className="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2 pb-2 border-b border-gray-800">
-              <div>Price, $</div>
-              <div className="text-right">Quantity</div>
-              <div className="text-right">Total, $</div>
-            </div>
-
-            {/* Sell Orders (Red) */}
-            <div className="mb-4">
-              {sellOrders.map((order, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
-                >
-                  <div className="text-red-500">{formatPrice(order.price)}</div>
-                  <div className="text-right text-gray-300">{formatNumber(order.quantity)}</div>
-                  <div className="text-right text-gray-300">
-                    {formatNumber(order.total / 1000)}k
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Current Price */}
-            <div className="py-3 border-y border-gray-800 my-2">
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">${formatPrice(currentPrice)}</div>
-                <div className="text-xs text-gray-400 mt-1">Buy: 35% / Sell: 65%</div>
-              </div>
-            </div>
-
-            {/* Buy Orders (Green) */}
-            <div>
-              {buyOrders.map((order, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
-                >
-                  <div className="text-[#22c55e]">{formatPrice(order.price)}</div>
-                  <div className="text-right text-gray-300">{formatNumber(order.quantity)}</div>
-                  <div className="text-right text-gray-300">
-                    {formatNumber(order.total / 1000)}k
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="p-4">
-            {/* Last Trades Header */}
-            <div className="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2 pb-2 border-b border-gray-800">
-              <div>Price, $</div>
-              <div className="text-right">Quantity</div>
-              <div className="text-right">Time</div>
-            </div>
-
-            {/* Last Trades List */}
-            <div>
-              {lastTrades.map((trade, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-3 gap-2 text-xs py-1 hover:bg-gray-900/50 cursor-pointer"
-                >
-                  <div className={trade.type === "buy" ? "text-[#22c55e]" : "text-red-500"}>
-                    {formatPrice(trade.price)}
-                  </div>
-                  <div className="text-right text-gray-300">{trade.quantity}</div>
-                  <div className="text-right text-gray-400">{trade.time}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   )
 }
-

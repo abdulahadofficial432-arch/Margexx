@@ -50,20 +50,90 @@ export function TradingViewChart({ symbol }: TradingViewChartProps) {
       widgetRef.current = new window.TradingView.widget({
         autosize: true,
         symbol: "BINANCE:BTCUSDT",
-        interval: "60",
+        interval: "1",
         timezone: "Etc/UTC",
         theme: "dark",
         style: "1",
         locale: "en",
-        toolbar_bg: "#0a0e27",
+        toolbar_bg: "#131622",
         enable_publishing: false,
+        allow_symbol_change: true,
         hide_top_toolbar: false,
         hide_legend: false,
-        save_image: false,
+        save_image: true,
         container_id: containerRef.current.id,
         studies: [
           "Volume@tv-basicstudies",
+          "RSI@tv-basicstudies",
+          "MACD@tv-basicstudies",
         ],
+        drawings_access: {
+          type: "black",
+          tools: [
+            { name: "Regression Trend" },
+            { name: "Trend Angle" },
+            { name: "Trend Line" },
+            { name: "Horizontal Line" },
+            { name: "Vertical Line" },
+            { name: "Parallel Channel" },
+            { name: "Rectangle" },
+            { name: "Ellipse" },
+            { name: "Arrow Up" },
+            { name: "Arrow Down" },
+            { name: "Text" },
+            { name: "Fibonacci Retracement" },
+            { name: "Fibonacci Extension" },
+            { name: "Fibonacci Fan" },
+            { name: "Fibonacci Arcs" },
+            { name: "Fibonacci Time Zones" },
+            { name: "Pitchfork" },
+            { name: "Elliott Wave" },
+            { name: "Gann Fan" },
+            { name: "Gann Square" },
+            { name: "Cycles" },
+            { name: "Crosshair" },
+            { name: "Measure" },
+          ],
+        },
+        disabled_features: [
+          "use_localstorage_for_settings",
+          "volume_force_overlay",
+          "create_volume_indicator_by_default",
+        ],
+        enabled_features: [
+          "study_templates",
+          "side_toolbar_in_fullscreen",
+          "header_in_fullscreen",
+          "header_widget",
+          "header_symbol_search",
+          "header_resolutions",
+          "header_compare",
+          "header_screenshot",
+          "header_chart_type",
+          "header_settings",
+          "header_indicators",
+          "header_undo_redo",
+          "header_screenshot",
+          "header_fullscreen_button",
+          "display_market_status",
+          "timeframes_toolbar",
+          "go_to_date",
+          "control_bar",
+          "timeframes_toolbar",
+          "border_around_the_chart",
+          "header_saveload",
+          "header_widget_dom_node",
+        ],
+        overrides: {
+          "paneProperties.background": "#131622",
+          "paneProperties.backgroundType": "solid",
+          "mainSeriesProperties.candleStyle.upColor": "#34CD26",
+          "mainSeriesProperties.candleStyle.downColor": "#D50000",
+          "mainSeriesProperties.candleStyle.borderUpColor": "#34CD26",
+          "mainSeriesProperties.candleStyle.borderDownColor": "#D50000",
+          "mainSeriesProperties.candleStyle.wickUpColor": "#34CD26",
+          "mainSeriesProperties.candleStyle.wickDownColor": "#D50000",
+        },
         width: "100%",
         height: "100%",
       })
@@ -80,36 +150,9 @@ export function TradingViewChart({ symbol }: TradingViewChartProps) {
   }, [scriptLoaded, symbol])
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Chart Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">{symbol} - 1 - MARGEX</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>O: 91,200.00</span>
-            <span>H: 91,611.50</span>
-            <span>L: 87,863.00</span>
-            <span>C: 91,583.50</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded">
-            1m
-          </button>
-          <button className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded">
-            5m
-          </button>
-          <button className="px-3 py-1 text-xs bg-[#22c55e] rounded">
-            1h
-          </button>
-          <button className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded">
-            1d
-          </button>
-        </div>
-      </div>
-
-      {/* Chart Container */}
-      <div className="flex-1 relative min-h-[500px]">
+    <div className="flex flex-col h-full bg-[#131622]">
+      {/* Chart Container - Full TradingView */}
+      <div className="flex-1 relative min-h-[491px] w-full">
         <div
           id={`tradingview_${symbol}`}
           ref={containerRef}
@@ -126,4 +169,3 @@ declare global {
     TradingView: any
   }
 }
-
