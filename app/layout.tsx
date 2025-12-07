@@ -42,7 +42,10 @@ export default function RootLayout({
         <Analytics />
         <Script
           src="https://s3.tradingview.com/tv.js"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
+          onLoad={() => {
+            console.log("TradingView script loaded")
+          }}
         />
       </body>
     </html>

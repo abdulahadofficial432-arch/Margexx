@@ -152,7 +152,7 @@ export default function TradePage() {
         </div>
 
         {/* Center Panel: Trading Chart */}
-        <div className="flex-1 flex flex-col border-r border-gray-800 bg-[#131622] min-w-0">
+        <div className="flex-1 flex flex-col border-r border-gray-800 bg-[#131622] min-w-0 overflow-hidden">
           <TradingViewChart symbol={selectedPair} />
         </div>
 
