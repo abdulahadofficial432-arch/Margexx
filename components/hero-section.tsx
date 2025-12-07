@@ -29,9 +29,11 @@ export function HeroSection() {
 
           {/* CTA Button */}
           <div className="mb-8 max-w-md mx-auto lg:mx-0">
-            <Button className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-6 text-lg">
-              Start Now
-            </Button>
+            <Link href="/trade">
+              <Button className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-6 text-lg">
+                Start Now
+              </Button>
+            </Link>
           </div>
         </div>
 
