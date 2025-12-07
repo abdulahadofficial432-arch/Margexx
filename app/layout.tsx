@@ -43,6 +43,7 @@ export default function RootLayout({
         <Script
           src="https://s3.tradingview.com/tv.js"
           strategy="afterInteractive"
+          id="tradingview-script"
         />
       </body>
     </html>

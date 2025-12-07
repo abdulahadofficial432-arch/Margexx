@@ -152,7 +152,7 @@ export default function TradePage() {
         </div>
 
         {/* Center Panel: Trading Chart */}
-        <div className="flex-1 flex flex-col border-r border-gray-800 bg-[#131622] min-w-0 overflow-hidden">
+        <div className="flex-1 flex flex-col border-r border-gray-800 bg-[#131622] min-w-0 overflow-hidden" style={{ minHeight: "491px" }}>
           <TradingViewChart symbol={selectedPair} />
         </div>
 
