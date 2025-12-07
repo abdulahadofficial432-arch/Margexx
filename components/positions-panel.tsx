@@ -16,9 +16,9 @@ export function PositionsPanel() {
   ]
 
   return (
-    <div className="flex flex-col h-full bg-[#131622]" style={{ fontFamily: 'Inter' }}>
+    <div className="flex flex-col h-full bg-[#131622]">
       {/* Tabs */}
-      <div className="absolute left-[10px] top-[11px] flex items-center">
+      <div className="flex items-center px-4 py-2 border-b border-gray-800 relative">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -34,11 +34,11 @@ export function PositionsPanel() {
         ))}
         {/* Active tab underline */}
         {activeTab === "positions" && (
-          <div className="absolute left-[10px] top-[20px] w-[111px] h-[2px] bg-[#3179FF]"></div>
+          <div className="absolute left-4 bottom-0 w-[111px] h-[2px] bg-[#3179FF]"></div>
         )}
         
         {/* Hide other assets checkbox */}
-        <div className="ml-auto flex items-center gap-2 absolute right-[10px] top-[11px]">
+        <div className="ml-auto flex items-center gap-2">
           <input
             type="checkbox"
             checked={hideOtherAssets}
@@ -51,8 +51,8 @@ export function PositionsPanel() {
         </div>
       </div>
 
-      {/* Content Area - rounded background */}
-      <div className="absolute left-[10px] top-[58px] w-[1417px] h-[76px] bg-[#1E2333] rounded-[15px] flex items-center justify-center">
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
           <div className="text-[#B7B7B7] text-[16px] font-medium tracking-[0.48px]">
             {activeTab === "positions" && "You have no Open Positions"}
