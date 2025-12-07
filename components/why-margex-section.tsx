@@ -1,33 +1,23 @@
 "use client"
 
-import { Shield, Zap, DollarSign, Headphones } from "lucide-react"
-
 export function WhyMargexSection() {
   const benefits = [
     {
-      icon: Shield,
-      title: "Secure",
-      description: "Your funds are protected with industry-leading security",
+      title: "Deep liquidity & tight spreads",
     },
     {
-      icon: DollarSign,
-      title: "Low Fees",
-      description: "Trade with the lowest fees in the market",
+      title: "Fast & Secure System",
     },
     {
-      icon: Zap,
-      title: "Fast Execution",
-      description: "Lightning-fast order execution",
+      title: "Copy trading for beginners",
     },
     {
-      icon: Headphones,
-      title: "24/7 Support",
-      description: "Always here for you",
+      title: "24/7 live support",
     },
   ]
 
   return (
-    <section className="section bg-background">
+    <section className="section bg-[#0a1428]">
       <div className="container">
         <h2 className="text-4xl font-bold text-white text-center mb-12">Why Margex?</h2>
 
@@ -36,7 +26,7 @@ export function WhyMargexSection() {
           <div className="bg-card border border-border rounded-lg p-8 min-h-[400px] relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
             
-            {/* Trading Interface Mockup */}
+            {/* Trading Interface Mockup with green highlights */}
             <div className="relative z-10">
               <div className="bg-secondary/50 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-4">
@@ -93,18 +83,14 @@ export function WhyMargexSection() {
 
           {/* Right - Benefits Grid */}
           <div className="grid grid-cols-2 gap-6">
-            {benefits.map((benefit, idx) => {
-              const Icon = benefit.icon
-              return (
-                <div key={idx} className="bg-card border border-border rounded-lg p-6 text-center">
-                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-white font-semibold mb-2">{benefit.title}</h3>
-                  <p className="text-muted-foreground text-sm">{benefit.description}</p>
+            {benefits.map((benefit, idx) => (
+              <div key={idx} className="bg-card border border-border rounded-lg p-6 text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-8 h-8 bg-[#22c55e] rounded-full"></div>
                 </div>
-              )
-            })}
+                <h3 className="text-white font-semibold text-sm">{benefit.title}</h3>
+              </div>
+            ))}
           </div>
         </div>
       </div>

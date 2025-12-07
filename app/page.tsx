@@ -1,6 +1,5 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
-import { TickerSection } from "@/components/ticker-section"
 import { FeaturesSection } from "@/components/features-section"
 import { TradingOpportunitiesSection } from "@/components/trading-opportunities-section"
 import { CopyTradingSection } from "@/components/copy-trading-section"
@@ -14,10 +13,9 @@ import { Footer } from "@/components/footer"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-[#0a1428]">
       <Header />
       <HeroSection />
-      <TickerSection />
       <FeaturesSection />
       <TradingOpportunitiesSection />
       <CopyTradingSection />
