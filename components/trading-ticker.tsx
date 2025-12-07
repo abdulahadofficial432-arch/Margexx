@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MessageCircle, HelpCircle, GraduationCap, BookOpen, X } from "lucide-react"
+import Image from "next/image"
 
 export function TradingTicker() {
   const [currentTime, setCurrentTime] = useState("10:58:40")
@@ -38,26 +38,26 @@ export function TradingTicker() {
   }
 
   return (
-    <div className="h-[21px] bg-[#131622] border-t border-gray-800 px-4 flex items-center justify-between text-[10px] font-semibold">
+    <div className="w-full h-full flex items-center justify-between px-4" style={{ fontFamily: 'Inter' }}>
       {/* Left Side */}
       <div className="flex items-center gap-4">
         {/* Connection Status */}
         <div className="flex items-center gap-2">
           <div className="w-[14.7px] h-[7.38px] bg-[#07B823] transform rotate-[49deg]"></div>
-          <span className="text-[#07B823] tracking-[0.20px]">Connection</span>
+          <span className="text-[#07B823] text-[10px] font-semibold tracking-[0.20px]">Connection</span>
         </div>
-        <span className="text-[#B7B7B7]">{currentTime} UTC</span>
-        <span className="text-[#B7B7B7]">New listings</span>
+        <span className="text-[#B7B7B7] text-[10px] font-semibold">{currentTime} UTC</span>
+        <span className="text-[#B7B7B7] text-[10px] font-semibold">New listings</span>
 
-        {/* Ticker Items */}
+        {/* Ticker Items with separators */}
         {tickers.map((ticker, idx) => (
           <div key={idx} className="flex items-center gap-2">
-            <span className="text-[#B7B7B7]">${formatPrice(ticker.price)}</span>
-            <span className="text-[#B7B7B7]">{ticker.symbol}</span>
+            <span className="text-[#B7B7B7] text-[10px] font-semibold">${formatPrice(ticker.price)}</span>
+            <span className="text-[#B7B7B7] text-[10px] font-semibold">{ticker.symbol}</span>
             {ticker.change !== 0 && (
               <span
-                className={`font-semibold ${
-                  ticker.change >= 0 ? "text-[#34CD26]" : "text-[#FF0000]"
+                className={`text-[10px] font-semibold ${
+                  ticker.change >= 0 ? "text-[#34CD26]" : ticker.change === -1.47 ? "text-[#FD0000]" : "text-[#FF0000]"
                 }`}
               >
                 {ticker.change >= 0 ? "+" : ""}
@@ -71,27 +71,29 @@ export function TradingTicker() {
         ))}
       </div>
 
-      {/* Right Side Icons */}
+      {/* Right Side Icons and Links */}
       <div className="flex items-center gap-4">
-        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
-          <MessageCircle className="w-3 h-3" />
-          <span>Live chat</span>
-        </button>
-        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
-          <HelpCircle className="w-3 h-3" />
-          <span>Help Center</span>
-        </button>
-        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
-          <GraduationCap className="w-3 h-3" />
-          <span>Tutorials</span>
-        </button>
-        <button className="text-white hover:text-gray-300 transition-colors flex items-center gap-1">
-          <BookOpen className="w-3 h-3" />
-          <span>Guides</span>
-        </button>
-        <button className="text-white hover:text-gray-300 transition-colors">
-          <X className="w-3 h-3" />
-        </button>
+        {/* Icons */}
+        <div className="w-[13px] h-[10.37px] bg-[#7A849D]"></div>
+        <div className="w-[12px] h-[11.41px] bg-[#7A849D]"></div>
+        <div className="w-[12px] h-[8.30px] bg-[#7A849D]"></div>
+        <div className="w-[12px] h-[10.37px] bg-[#7A849D]"></div>
+        
+        {/* Text Links */}
+        <span className="text-white text-[10px] font-semibold">Live chat</span>
+        <span className="text-white text-[10px] font-semibold">Help Center</span>
+        <span className="text-white text-[10px] font-semibold">Tutorials</span>
+        <span className="text-white text-[10px] font-semibold">Guides</span>
+        
+        {/* Social Icons */}
+        <div className="flex items-center gap-1">
+          <div className="w-[11px] h-[11.41px] bg-black"></div>
+          <div className="w-[11px] h-[10.34px] bg-[#757575]"></div>
+        </div>
+        <div className="w-[13px] h-[13px] bg-gradient-to-b from-[#2AABEE] to-[#229ED9] relative">
+          <div className="absolute left-[3px] top-[2px] w-[7px] h-[5px] bg-white"></div>
+        </div>
+        <div className="w-[13px] h-[12.44px] bg-[#0088CE]"></div>
       </div>
     </div>
   )

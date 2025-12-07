@@ -10,6 +10,7 @@ export function TradingViewChart({ symbol }: TradingViewChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetRef = useRef<any>(null)
   const [scriptLoaded, setScriptLoaded] = useState(false)
+  const [chartReady, setChartReady] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -137,6 +138,9 @@ export function TradingViewChart({ symbol }: TradingViewChartProps) {
         width: "100%",
         height: "100%",
       })
+      
+      // Set chart as ready after a short delay
+      setTimeout(() => setChartReady(true), 1000)
     } catch (error) {
       console.error("Error initializing TradingView widget:", error)
     }
@@ -150,15 +154,23 @@ export function TradingViewChart({ symbol }: TradingViewChartProps) {
   }, [scriptLoaded, symbol])
 
   return (
-    <div className="flex flex-col h-full bg-[#131622]">
+    <div className="relative w-full h-full bg-[#131622]">
+      {/* Placeholder text - shown until chart loads */}
+      {!chartReady && (
+        <div 
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-[48px] font-semibold tracking-[1.44px]"
+          style={{ fontFamily: 'Inter' }}
+        >
+          TradingView Area
+        </div>
+      )}
+      
       {/* Chart Container - Full TradingView */}
-      <div className="flex-1 relative min-h-[491px] w-full">
-        <div
-          id={`tradingview_${symbol}`}
-          ref={containerRef}
-          className="absolute inset-0 w-full h-full"
-        />
-      </div>
+      <div
+        id={`tradingview_${symbol}`}
+        ref={containerRef}
+        className="w-full h-full"
+      />
     </div>
   )
 }
