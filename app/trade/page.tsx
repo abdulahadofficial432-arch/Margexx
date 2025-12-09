@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Bell, User, Settings, HelpCircle, ChevronDown } from "lucide-react"
+import { Search, Bell, User, Settings, HelpCircle, ChevronDown, AlertCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TradingViewChart } from "@/components/trading-view-chart"
 import { OrderEntryPanel } from "@/components/order-entry-panel"
@@ -26,6 +26,15 @@ export default function TradePage() {
   // Connect to Binance WebSocket
   useBinanceWebSocket()
 
+  // Check for API credentials
+  const [showApiError, setShowApiError] = useState(false)
+  
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_BINANCE_API_KEY || ''
+    const apiSecret = process.env.NEXT_PUBLIC_BINANCE_SECRET || ''
+    setShowApiError(!apiKey || !apiSecret)
+  }, [])
+
   // Initialize with BTCUSDT if not set
   useEffect(() => {
     if (!selectedPair) {
@@ -44,7 +53,23 @@ export default function TradePage() {
   const displayPair = selectedPair.replace('USDT', 'USD') || 'BTCUSD'
 
   return (
-    <div className="h-screen bg-[#1E2333] text-white flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#1E2333] text-white flex flex-col overflow-hidden relative">
+      {/* API Credentials Error Banner */}
+      {showApiError && (
+        <div className="absolute top-2 right-2 z-50 bg-red-600 border border-red-700 rounded px-4 py-2 flex items-center gap-2 shadow-lg">
+          <AlertCircle className="w-4 h-4 text-white flex-shrink-0" />
+          <span className="text-white text-sm font-medium">
+            API credentials not configured. Please set BINANCE_API_KEY and BINANCE_SECRET
+          </span>
+          <button
+            onClick={() => setShowApiError(false)}
+            className="ml-2 text-white hover:text-red-200 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Top Navigation Bar */}
       <header className="h-[40px] bg-[#131622] border-b border-gray-800">
         <div className="flex items-center justify-between px-4 h-full">
