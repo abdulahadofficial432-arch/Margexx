@@ -9,22 +9,39 @@ import { OrderEntryPanel } from "@/components/order-entry-panel"
 import { OrderBookPanel } from "@/components/order-book-panel"
 import { PositionsPanel } from "@/components/positions-panel"
 import { TradingTicker } from "@/components/trading-ticker"
+import { useTradingStore } from "@/lib/store/tradingStore"
+import { useBinanceWebSocket } from "@/hooks/useBinanceWebSocket"
 
 export default function TradePage() {
-  const [selectedPair, setSelectedPair] = useState("BTCUSD")
-  const [price, setPrice] = useState(111036)
-  const [change24h, setChange24h] = useState(1.37)
-  const [volume24h, setVolume24h] = useState(955823256)
-  const [high24h, setHigh24h] = useState(112116.5)
-  const [low24h, setLow24h] = useState(107797.5)
+  const {
+    selectedPair,
+    currentPrice,
+    priceChange24h,
+    volume24h: storeVolume24h,
+    high24h: storeHigh24h,
+    low24h: storeLow24h,
+    setSelectedPair,
+  } = useTradingStore()
 
-  // Simulate price updates
+  // Connect to Binance WebSocket
+  useBinanceWebSocket()
+
+  // Initialize with BTCUSDT if not set
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPrice(prev => prev + (Math.random() - 0.5) * 10)
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
+    if (!selectedPair) {
+      setSelectedPair('BTCUSDT')
+    }
+  }, [selectedPair, setSelectedPair])
+
+  // Use real data from store, fallback to defaults
+  const price = currentPrice || 111036
+  const change24h = priceChange24h || 1.37
+  const vol24h = storeVolume24h || 955823256
+  const high24h = storeHigh24h || 112116.5
+  const low24h = storeLow24h || 107797.5
+  
+  // Format pair for display (BTCUSDT -> BTCUSD)
+  const displayPair = selectedPair.replace('USDT', 'USD') || 'BTCUSD'
 
   return (
     <div className="h-screen bg-[#1E2333] text-white flex flex-col overflow-hidden">
@@ -91,7 +108,7 @@ export default function TradePage() {
         
         {/* BTCUSD Text */}
         <div className="absolute left-[43px] top-[14px] text-white text-[12px] font-semibold">
-          {selectedPair}
+          {displayPair}
         </div>
         
         {/* Dropdown Arrow */}
@@ -126,7 +143,7 @@ export default function TradePage() {
           {change24h >= 0 ? "+" : ""}{change24h}%
         </div>
         <div className="absolute left-[276px] top-[21px] text-[#CFCFCF] text-[11px] font-semibold">
-          ${volume24h.toLocaleString()}
+          ${vol24h.toLocaleString()}
         </div>
         <div className="absolute left-[370px] top-[21px] text-[#CFCFCF] text-[11px] font-semibold">
           ${high24h.toLocaleString()}
@@ -144,21 +161,21 @@ export default function TradePage() {
         {/* Left Panel: Order Entry */}
         <div className="w-[237px] border-r border-gray-800 bg-[#131622] flex-shrink-0">
           <OrderEntryPanel
-            pair={selectedPair}
+            pair={displayPair}
             price={price}
             change24h={change24h}
-            volume24h={volume24h}
+            volume24h={vol24h}
           />
         </div>
 
         {/* Center Panel: Trading Chart */}
         <div className="flex-1 flex flex-col border-r border-gray-800 bg-[#131622] min-w-0 overflow-hidden" style={{ minHeight: "491px" }}>
-          <TradingViewChart symbol={selectedPair} />
+          <TradingViewChart symbol={selectedPair || 'BTCUSDT'} />
         </div>
 
         {/* Right Panel: Order Book & Last Trades */}
         <div className="w-[240px] bg-[#131622] flex-shrink-0">
-          <OrderBookPanel pair={selectedPair} currentPrice={price} />
+          <OrderBookPanel pair={displayPair} currentPrice={price} />
         </div>
       </div>
 

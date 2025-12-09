@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { useTradingStore } from "@/lib/store/tradingStore"
 
 interface OrderBookPanelProps {
   pair: string
@@ -9,41 +10,45 @@ interface OrderBookPanelProps {
 
 export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
   const [activeTab, setActiveTab] = useState<"orderbook" | "trades">("orderbook")
+  const { orderBook } = useTradingStore()
 
-  // Mock order book data - matching the design
-  const sellOrders = [
-    { price: 111045.5, quantity: 11925, total: 10789300 },
-    { price: 111045, quantity: 11925, total: 10789300 },
-    { price: 111045.5, quantity: 11925, total: 10789300 },
-    { price: 111045, quantity: 11925, total: 10789300 },
-    { price: 111045.5, quantity: 11925, total: 10789300 },
-    { price: 111045, quantity: 11925, total: 10789300 },
-    { price: 111045.5, quantity: 11925, total: 10789300 },
-    { price: 111045, quantity: 11925, total: 10789300 },
-    { price: 111045.5, quantity: 11925, total: 10789300 },
-  ]
+  // Use real order book data, limit to top 9 levels for display
+  const sellOrders = useMemo(() => {
+    return orderBook.asks
+      .slice(0, 9)
+      .map(order => ({
+        price: order.price,
+        quantity: order.quantity,
+        total: order.total,
+      }))
+  }, [orderBook.asks])
 
-  const buyOrders = [
-    { price: 111045, quantity: 11045, total: 11045 },
-    { price: 111045, quantity: 11045, total: 11045 },
-    { price: 111045, quantity: 111045, total: 111045 },
-    { price: 111045, quantity: 111045, total: 111045 },
-    { price: 111045, quantity: 111045, total: 111045 },
-    { price: 111045, quantity: 111045, total: 111045 },
-    { price: 1111045, quantity: 1111045, total: 1111045 },
-    { price: 1111045, quantity: 1111045, total: 1111045 },
-    { price: 1111045, quantity: 1111045, total: 1111045 },
-  ]
+  const buyOrders = useMemo(() => {
+    return orderBook.bids
+      .slice(0, 9)
+      .map(order => ({
+        price: order.price,
+        quantity: order.quantity,
+        total: order.total,
+      }))
+  }, [orderBook.bids])
 
-  // Mock last trades
+  // Mock last trades (can be replaced with real trade stream later)
   const lastTrades = [
-    { price: 111034, quantity: 359, time: "19:51:45", type: "buy" },
-    { price: 111033.5, quantity: 20, time: "19:51:44", type: "sell" },
-    { price: 111034.5, quantity: 16, time: "19:51:45", type: "sell" },
-    { price: 111032.5, quantity: 13, time: "19:51:45", type: "sell" },
-    { price: 111034, quantity: 123, time: "19:51:42", type: "buy" },
-    { price: 111034, quantity: 567, time: "19:51:41", type: "buy" },
+    { price: currentPrice || 111034, quantity: 359, time: new Date().toLocaleTimeString(), type: "buy" },
+    { price: (currentPrice || 111034) - 0.5, quantity: 20, time: new Date().toLocaleTimeString(), type: "sell" },
+    { price: (currentPrice || 111034) + 0.5, quantity: 16, time: new Date().toLocaleTimeString(), type: "sell" },
+    { price: (currentPrice || 111034) - 1, quantity: 13, time: new Date().toLocaleTimeString(), type: "sell" },
+    { price: currentPrice || 111034, quantity: 123, time: new Date().toLocaleTimeString(), type: "buy" },
+    { price: currentPrice || 111034, quantity: 567, time: new Date().toLocaleTimeString(), type: "buy" },
   ]
+
+  // Calculate buy/sell ratio
+  const buyTotal = buyOrders.reduce((sum, order) => sum + order.total, 0)
+  const sellTotal = sellOrders.reduce((sum, order) => sum + order.total, 0)
+  const totalVolume = buyTotal + sellTotal
+  const buyPercentage = totalVolume > 0 ? (buyTotal / totalVolume) * 100 : 50
+  const sellPercentage = totalVolume > 0 ? (sellTotal / totalVolume) * 100 : 50
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en-US").format(num)
@@ -138,12 +143,12 @@ export function OrderBookPanel({ pair, currentPrice }: OrderBookPanelProps) {
           {/* Buy/Sell Ratio Bar */}
           <div className="px-3 py-2 border-t border-gray-800">
             <div className="flex h-[1px] rounded-[2px] overflow-hidden mb-1">
-              <div className="bg-[#00FF09] flex-1" style={{ width: "40%" }}></div>
-              <div className="bg-[#FF0000] flex-1" style={{ width: "60%" }}></div>
+              <div className="bg-[#00FF09]" style={{ width: `${buyPercentage}%` }}></div>
+              <div className="bg-[#FF0000]" style={{ width: `${sellPercentage}%` }}></div>
             </div>
             <div className="flex justify-between text-[10px]">
-              <div className="text-[#00FF08] font-semibold">Buy: 40%</div>
-              <div className="text-[#F90B0B] font-semibold">Sell: 60%</div>
+              <div className="text-[#00FF08] font-semibold">Buy: {buyPercentage.toFixed(1)}%</div>
+              <div className="text-[#F90B0B] font-semibold">Sell: {sellPercentage.toFixed(1)}%</div>
             </div>
           </div>
         </>

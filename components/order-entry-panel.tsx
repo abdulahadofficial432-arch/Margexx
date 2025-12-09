@@ -1,10 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
+import { useTradingStore } from "@/lib/store/tradingStore"
+import { placeOrder } from "@/lib/api/tradeApi"
+import { toast } from "sonner"
 
 interface OrderEntryPanelProps {
   pair: string
@@ -14,15 +17,117 @@ interface OrderEntryPanelProps {
 }
 
 export function OrderEntryPanel({ pair, price, change24h, volume24h }: OrderEntryPanelProps) {
+  const { currentPrice } = useTradingStore()
   const [orderType, setOrderType] = useState("Limit")
   const [marginMode, setMarginMode] = useState("Isolated")
   const [leverage, setLeverage] = useState(60)
   const [orderSize, setOrderSize] = useState("0")
-  const [limitPrice, setLimitPrice] = useState("111035.5")
+  const [limitPrice, setLimitPrice] = useState("")
   const [sliderValue, setSliderValue] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Get API credentials from environment or user input
+  const apiKey = process.env.NEXT_PUBLIC_BINANCE_API_KEY || ''
+  const apiSecret = process.env.NEXT_PUBLIC_BINANCE_SECRET || ''
 
-  const buyPrice = price
-  const sellPrice = price - 0.5
+  // Update limit price when current price changes
+  useEffect(() => {
+    if (currentPrice > 0 && !limitPrice) {
+      setLimitPrice(currentPrice.toFixed(1))
+    }
+  }, [currentPrice, limitPrice])
+
+  const displayPrice = currentPrice || price
+  const buyPrice = displayPrice
+  const sellPrice = displayPrice - 0.5
+
+  const handleBuy = async () => {
+    if (!orderSize || parseFloat(orderSize) <= 0) {
+      toast.error("Please enter a valid order size")
+      return
+    }
+
+    if (orderType === "Limit" && (!limitPrice || parseFloat(limitPrice) <= 0)) {
+      toast.error("Please enter a valid limit price")
+      return
+    }
+
+    if (!apiKey || !apiSecret) {
+      toast.error("API credentials not configured. Please set BINANCE_API_KEY and BINANCE_SECRET")
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      const orderParams = {
+        symbol: pair.replace('/', '').replace('USD', 'USDT'),
+        side: 'BUY' as const,
+        type: orderType === "Limit" ? 'LIMIT' as const : orderType === "Market" ? 'MARKET' as const : 'STOP_MARKET' as const,
+        quantity: orderSize,
+        price: orderType === "Limit" ? limitPrice : undefined,
+        timeInForce: orderType === "Limit" ? 'GTC' as const : undefined,
+        positionSide: 'LONG' as const,
+        apiKey,
+        secret: apiSecret,
+      }
+
+      const result = await placeOrder(orderParams)
+      toast.success(`Buy order placed successfully! Order ID: ${result.order.orderId}`)
+      
+      // Reset form
+      setOrderSize("0")
+      setSliderValue(0)
+    } catch (error: any) {
+      toast.error(error.message || "Failed to place buy order")
+      console.error("Buy order error:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleSell = async () => {
+    if (!orderSize || parseFloat(orderSize) <= 0) {
+      toast.error("Please enter a valid order size")
+      return
+    }
+
+    if (orderType === "Limit" && (!limitPrice || parseFloat(limitPrice) <= 0)) {
+      toast.error("Please enter a valid limit price")
+      return
+    }
+
+    if (!apiKey || !apiSecret) {
+      toast.error("API credentials not configured. Please set BINANCE_API_KEY and BINANCE_SECRET")
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      const orderParams = {
+        symbol: pair.replace('/', '').replace('USD', 'USDT'),
+        side: 'SELL' as const,
+        type: orderType === "Limit" ? 'LIMIT' as const : orderType === "Market" ? 'MARKET' as const : 'STOP_MARKET' as const,
+        quantity: orderSize,
+        price: orderType === "Limit" ? limitPrice : undefined,
+        timeInForce: orderType === "Limit" ? 'GTC' as const : undefined,
+        positionSide: 'SHORT' as const,
+        apiKey,
+        secret: apiSecret,
+      }
+
+      const result = await placeOrder(orderParams)
+      toast.success(`Sell order placed successfully! Order ID: ${result.order.orderId}`)
+      
+      // Reset form
+      setOrderSize("0")
+      setSliderValue(0)
+    } catch (error: any) {
+      toast.error(error.message || "Failed to place sell order")
+      console.error("Sell order error:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const formatPrice = (num: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -200,9 +305,13 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h }: OrderEntr
 
       {/* Buy and Sell Buttons */}
       <div className="px-4 pb-3 flex gap-2">
-        <button className="flex-1 h-[43px] bg-[#43C71F] rounded-[1px] relative flex flex-col items-center justify-center">
+        <button 
+          onClick={handleBuy}
+          disabled={isSubmitting}
+          className="flex-1 h-[43px] bg-[#43C71F] rounded-[1px] relative flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3ab01a] transition-colors"
+        >
           <div className="text-white text-[10px] font-semibold tracking-[0.1px]">
-            Buy/Long
+            {isSubmitting ? "Placing..." : "Buy/Long"}
           </div>
           <div className="text-white text-[10px] font-semibold">
             ${formatPrice(buyPrice)}
@@ -211,9 +320,13 @@ export function OrderEntryPanel({ pair, price, change24h, volume24h }: OrderEntr
             <div className="w-[8.33px] h-[8.33px] bg-white m-auto mt-[0.83px]"></div>
           </div>
         </button>
-        <button className="flex-1 h-[43px] bg-[#E43714] rounded-[1px] relative flex flex-col items-center justify-center">
+        <button 
+          onClick={handleSell}
+          disabled={isSubmitting}
+          className="flex-1 h-[43px] bg-[#E43714] rounded-[1px] relative flex flex-col items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d02f0f] transition-colors"
+        >
           <div className="text-white text-[10px] font-semibold tracking-[0.1px]">
-            Sell/Short
+            {isSubmitting ? "Placing..." : "Sell/Short"}
           </div>
           <div className="text-white text-[11px] font-semibold">
             ${formatPrice(sellPrice)}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
 import Script from 'next/script'
 import './globals.css'
 
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />
+        <Toaster position="top-right" richColors />
         <Script
           src="https://s3.tradingview.com/tv.js"
           strategy="afterInteractive"
