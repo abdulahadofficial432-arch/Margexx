@@ -1,0 +1,532 @@
+--- FILE: README.md ---
+
+# Trading UI Fix - Full Copy/Paste Project
+
+This repo contains a ready-to-paste project that brings live klines, order book, and trade execution (Binance Futures) to your existing React theme without changing styles.
+
+Instructions:
+
+1. Create a project folder.
+2. Split the file blocks below into actual files following the `--- FILE: path/filename ---` markers.
+3. Run `cd server && npm install` and `cd frontend && npm install`.
+4. Start server and frontend as described.
+
+Use testnet keys while developing.
+
+--- FILE: .env.example ---
+
+# Copy to .env and fill values
+
+BINANCE_API_KEY=your_binance_api_key_here
+BINANCE_SECRET=your_binance_secret_here
+APP_API_KEY=supersecretappkey123
+PORT=5000
+SYMBOL=BTCUSDT
+REACT_APP_BACKEND=http://localhost:5000
+REACT_APP_APP_API_KEY=supersecretappkey123
+REACT_APP_SYMBOL=BTCUSDT
+
+--- FILE: server/package.json ---
+{
+  "name": "trading-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  }
+}
+
+--- FILE: server/index.js ---
+// server/index.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+const tradeRouter = require('./routes/trade');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+// Simple header auth for frontend -> backend
+app.use((req, res, next) => {
+  if (req.path.startsWith('/trade')) {
+    const key = req.headers['x-api-key'] || req.query.api_key;
+    if (!key || key !== process.env.APP_API_KEY) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  }
+  next();
+});
+
+app.use('/trade', tradeRouter);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Trade server running on port ${PORT}`));
+
+--- FILE: server/routes/trade.js ---
+// server/routes/trade.js
+const express = require('express');
+const axios = require('axios');
+const signature = require('../utils/signature');
+const qs = require('querystring');
+
+const router = express.Router();
+const BASE = 'https://fapi.binance.com'; // futures REST
+
+// helper to post signed request to Binance
+async function postOrder(payload) {
+  const timestamp = Date.now();
+  const query = { ...payload, timestamp };
+  const queryString = qs.stringify(query);
+  const signatureStr = signature.sign(queryString, process.env.BINANCE_SECRET);
+  const url = `${BASE}/fapi/v1/order?${queryString}&signature=${signatureStr}`;
+
+  const headers = {
+    'X-MBX-APIKEY': process.env.BINANCE_API_KEY,
+    'Content-Type': 'application/json'
+  };
+
+  return axios.post(url, {}, { headers });
+}
+
+// POST /trade/buy or /trade/sell
+router.post('/:side', async (req, res) => {
+  try {
+    const sideParam = req.params.side.toUpperCase(); // 'BUY' or 'SELL'
+    if (!['BUY','SELL'].includes(sideParam)) {
+      return res.status(400).json({ error: 'side must be buy or sell' });
+    }
+
+    const { symbol, type, quantity, price, leverage, positionSide, timeInForce } = req.body;
+
+    // Basic validation
+    if (!symbol || !type || !quantity) {
+      return res.status(400).json({ error: 'symbol, type, quantity required' });
+    }
+
+    // Build order payload for Binance futures
+    const payload = {
+      symbol,
+      side: sideParam,
+      type: type.toUpperCase(), // MARKET or LIMIT
+      quantity: quantity.toString()
+    };
+
+    if (type.toUpperCase() === 'LIMIT') {
+      payload.price = price;
+      payload.timeInForce = timeInForce || 'GTC';
+    }
+
+    if (positionSide) payload.positionSide = positionSide; // BOTH, LONG, SHORT
+
+    // Call Binance
+    const binanceResp = await postOrder(payload);
+    return res.json({ ok: true, data: binanceResp.data });
+
+  } catch (err) {
+    console.error('Trade error', err?.response?.data || err.message);
+    const data = err?.response?.data || { message: err.message };
+    return res.status(500).json({ ok: false, error: data });
+  }
+});
+
+module.exports = router;
+
+--- FILE: server/utils/signature.js ---
+// server/utils/signature.js
+const crypto = require('crypto');
+
+function sign(str, secret) {
+  return crypto.createHmac('sha256', secret).update(str).digest('hex');
+}
+
+module.exports = { sign };
+
+--- FILE: frontend/package.json ---
+{
+  "name": "trading-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "zustand": "^4.4.0",
+    "axios": "^1.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  }
+}
+
+--- FILE: frontend/.env ---
+REACT_APP_BACKEND=http://localhost:5000
+REACT_APP_APP_API_KEY=supersecretappkey123
+REACT_APP_SYMBOL=BTCUSDT
+
+--- FILE: frontend/src/store/chartStore.js ---
+import create from 'zustand';
+
+export const useChartStore = create(set => ({
+  candles: [], // {t, o, h, l, c, v}
+  lastPrice: null,
+  pushCandle: (candle) => set(state => {
+    const arr = [...state.candles];
+    if (arr.length && arr[arr.length - 1].t === candle.t) {
+      arr[arr.length - 1] = candle;
+    } else {
+      arr.push(candle);
+      if (arr.length > 500) arr.shift();
+    }
+    return { candles: arr, lastPrice: candle.c };
+  }),
+  setCandles: (candles) => set({ candles }),
+}));
+
+--- FILE: frontend/src/store/orderBookStore.js ---
+import create from 'zustand';
+
+export const useOrderBookStore = create(set => ({
+  bids: [], // [[price, qty], ...]
+  asks: [],
+  buyRatio: 50,
+  setBook: (bids, asks) => set({ bids, asks }),
+  updateBookPartial: (bidsDelta, asksDelta) => set(state => {
+    const mergeSide = (side, delta) => {
+      const map = new Map(side.map(([p,q]) => [p, parseFloat(q)]));
+      delta.forEach(([p,q]) => {
+        const qn = parseFloat(q);
+        if (qn === 0) map.delete(p);
+        else map.set(p, qn);
+      });
+      return Array.from(map.entries()).map(([p,q]) => [p, q.toString()]);
+    };
+    const newBids = mergeSide(state.bids, bidsDelta);
+    const newAsks = mergeSide(state.asks, asksDelta);
+    return { bids: newBids, asks: newAsks };
+  })
+}));
+
+--- FILE: frontend/src/store/tradeStore.js ---
+import create from 'zustand';
+
+export const useTradeStore = create(set => ({
+  positions: [],
+  orders: [],
+  addOrder: (order) => set(state => ({ orders: [order, ...state.orders] })),
+  updateOrder: (orderId, upd) => set(state => ({
+    orders: state.orders.map(o => o.orderId === orderId ? {...o, ...upd} : o)
+  })),
+  setPositions: (positions) => set({ positions }),
+}));
+
+--- FILE: frontend/src/services/wsKlines.js ---
+import { useChartStore } from '../store/chartStore';
+
+const symbolLower = (process.env.REACT_APP_SYMBOL || 'BTCUSDT').toLowerCase();
+const stream = `${symbolLower}@kline_1m`;
+const wsUrl = `wss://fstream.binance.com/ws/${stream}`;
+
+let ws;
+let reconnectTimeout = null;
+
+export function connectKlines() {
+  const pushCandle = useChartStore.getState().pushCandle;
+
+  function init() {
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log('Klines WS open');
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    };
+
+    ws.onmessage = (evt) => {
+      try {
+        const data = JSON.parse(evt.data);
+        const k = data.k;
+        const candle = {
+          t: k.t,
+          o: parseFloat(k.o),
+          h: parseFloat(k.h),
+          l: parseFloat(k.l),
+          c: parseFloat(k.c),
+          v: parseFloat(k.v)
+        };
+        pushCandle(candle);
+      } catch (e) {
+        console.error('kline parse err', e);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('Klines WS closed, reconnecting in 3s');
+      reconnectTimeout = setTimeout(init, 3000);
+    };
+
+    ws.onerror = (err) => {
+      console.error('Klines WS err', err);
+      ws.close();
+    };
+  }
+
+  init();
+}
+
+export function disconnectKlines() {
+  if (ws) ws.close();
+}
+
+--- FILE: frontend/src/services/wsOrderBook.js ---
+import { useOrderBookStore } from '../store/orderBookStore';
+
+const symbolLower = (process.env.REACT_APP_SYMBOL || 'BTCUSDT').toLowerCase();
+const stream = `${symbolLower}@depth20@100ms`;
+const wsUrl = `wss://fstream.binance.com/ws/${stream}`;
+
+let ws;
+let reconnectTimeout = null;
+
+export function connectOrderBook() {
+  const setBook = useOrderBookStore.getState().setBook;
+  const updateBookPartial = useOrderBookStore.getState().updateBookPartial;
+
+  function init() {
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log('OrderBook WS open');
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    };
+
+    ws.onmessage = (evt) => {
+      try {
+        const data = JSON.parse(evt.data);
+        if (data.b && data.a) {
+          updateBookPartial(data.b, data.a);
+        } else {
+          if (data.bids && data.asks) {
+            setBook(data.bids, data.asks);
+          }
+        }
+      } catch (e) {
+        console.error('orderbook parse err', e);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('OrderBook WS closed, reconnecting in 3s');
+      reconnectTimeout = setTimeout(init, 3000);
+    };
+
+    ws.onerror = (err) => {
+      console.error('OrderBook WS err', err);
+      ws.close();
+    };
+  }
+
+  init();
+}
+
+export function disconnectOrderBook() {
+  if (ws) ws.close();
+}
+
+--- FILE: frontend/src/services/tradeExecution.js ---
+import axios from 'axios';
+
+const BACKEND = process.env.REACT_APP_BACKEND || 'http://localhost:5000';
+const API_KEY = process.env.REACT_APP_APP_API_KEY || 'supersecretappkey123';
+
+export async function executeOrder(side, { symbol = (process.env.REACT_APP_SYMBOL || 'BTCUSDT'), type = 'MARKET', quantity, price, timeInForce, positionSide }) {
+  try {
+    const url = `${BACKEND}/trade/${side.toLowerCase()}`;
+    const body = { symbol, type, quantity, price, timeInForce, positionSide };
+
+    const res = await axios.post(url, body, {
+      headers: { 'x-api-key': API_KEY }
+    });
+
+    return res.data;
+  } catch (err) {
+    console.error('executeOrder err', err?.response?.data || err.message);
+    throw err;
+  }
+}
+
+--- FILE: frontend/src/index.js ---
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+import { connectKlines } from './services/wsKlines';
+import { connectOrderBook } from './services/wsOrderBook';
+
+// start websockets
+connectKlines();
+connectOrderBook();
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+--- FILE: frontend/src/components/ChartWrapper.jsx ---
+import React from 'react';
+import { useChartStore } from '../store/chartStore';
+
+export default function ChartWrapper({ ChartComponent }) {
+  const candles = useChartStore(state => state.candles);
+  const lastPrice = useChartStore(state => state.lastPrice);
+
+  return (
+    <div style={{ width: '100%', height: '100%' }}>
+      <ChartComponent candles={candles} lastPrice={lastPrice} />
+    </div>
+  );
+}
+
+--- FILE: frontend/src/components/OrderBookWrapper.jsx ---
+import React from 'react';
+import { useOrderBookStore } from '../store/orderBookStore';
+
+export default function OrderBookWrapper({ OrderBookComponent }) {
+  const bids = useOrderBookStore(state => state.bids);
+  const asks = useOrderBookStore(state => state.asks);
+
+  return (
+    <OrderBookComponent bids={bids} asks={asks} />
+  );
+}
+
+--- FILE: frontend/src/components/TradePanelActions.jsx ---
+import React, { useState } from 'react';
+import { executeOrder } from '../services/tradeExecution';
+import { useTradeStore } from '../store/tradeStore';
+
+export default function TradePanelActions({ quantityDefault = 0.001 }) {
+  const [loading, setLoading] = useState(false);
+  const addOrder = useTradeStore(state => state.addOrder);
+
+  async function onBuy() {
+    try {
+      setLoading(true);
+      const resp = await executeOrder('buy', { type: 'MARKET', quantity: quantityDefault });
+      addOrder(resp.data);
+      alert('Order Executed Successfully');
+    } catch (err) {
+      alert('Order failed: ' + (err?.response?.data?.error?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onSell() {
+    try {
+      setLoading(true);
+      const resp = await executeOrder('sell', { type: 'MARKET', quantity: quantityDefault });
+      addOrder(resp.data);
+      alert('Order Executed Successfully');
+    } catch (err) {
+      alert('Order failed: ' + (err?.response?.data?.error?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={onBuy} disabled={loading} className="buy-btn">Buy/Long</button>
+      <button onClick={onSell} disabled={loading} className="sell-btn">Sell/Short</button>
+    </div>
+  );
+}
+
+--- FILE: frontend/src/App.jsx ---
+import React from 'react';
+import ChartWrapper from './components/ChartWrapper';
+import OrderBookWrapper from './components/OrderBookWrapper';
+import TradePanelActions from './components/TradePanelActions';
+
+// NOTE: Replace `LegacyChart` and `LegacyOrderBook` with your existing components.
+import LegacyChart from './legacy/LegacyChart';
+import LegacyOrderBook from './legacy/LegacyOrderBook';
+
+export default function App(){
+  return (
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex' }}>
+        <div style={{ flex: 1 }}>
+          <ChartWrapper ChartComponent={LegacyChart} />
+        </div>
+        <div style={{ width: 360 }}>
+          <OrderBookWrapper OrderBookComponent={LegacyOrderBook} />
+        </div>
+      </div>
+      <div style={{ height: 120 }}>
+        <TradePanelActions quantityDefault={0.001} />
+      </div>
+    </div>
+  );
+}
+
+--- FILE: frontend/src/legacy/LegacyChart.jsx ---
+// Placeholder wrapper for your existing chart component. Replace this file with your real component file or re-export it.
+import React from 'react';
+
+export default function LegacyChart({ candles, lastPrice }){
+  // Very minimal placeholder: integrate your real chart component here.
+  return (
+    <div style={{ padding: 12, color: '#fff' }}>
+      <div>Last price: {lastPrice}</div>
+      <pre style={{ maxHeight: 400, overflow: 'auto' }}>{JSON.stringify(candles.slice(-20), null, 2)}</pre>
+    </div>
+  );
+}
+
+--- FILE: frontend/src/legacy/LegacyOrderBook.jsx ---
+import React from 'react';
+
+export default function LegacyOrderBook({ bids, asks }){
+  return (
+    <div style={{ padding: 12, color: '#fff', fontSize: 12 }}>
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 'bold' }}>Asks</div>
+          <div style={{ maxHeight: 300, overflow: 'auto' }}>
+            {asks.slice(0,20).map(([p,q], i) => (
+              <div key={i} style={{ color: '#ff6b6b' }}>{p} — {q}</div>
+            ))}
+          </div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 'bold' }}>Bids</div>
+          <div style={{ maxHeight: 300, overflow: 'auto' }}>
+            {bids.slice(0,20).map(([p,q], i) => (
+              <div key={i} style={{ color: '#4cd137' }}>{p} — {q}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+--- FILE: frontend/README.md ---
+
+1. Copy files into `frontend/` then run `npm install`.
+2. Ensure `.env` values are set.
+3. Start with `npm start`.
+
+--- END OF PROJECT ---
+
